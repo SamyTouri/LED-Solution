@@ -325,21 +325,6 @@
               </div>
             </div>
 
-            <div class="field" id="searchModeField" style="display:none">
-              <label>Mode de recherche image</label>
-              <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.82rem;color:var(--text-mid);padding:0.5rem 0.8rem;border:1px solid var(--border);border-radius:6px;transition:.2s">
-                  <input type="radio" name="searchMode" value="clip_only" checked style="accent-color:var(--blue)"> Similarit&eacute; visuelle (CLIP)
-                </label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.82rem;color:var(--text-mid);padding:0.5rem 0.8rem;border:1px solid var(--border);border-radius:6px;transition:.2s">
-                  <input type="radio" name="searchMode" value="vision_text" style="accent-color:var(--blue)"> Description IA (Vision)
-                </label>
-                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.82rem;color:var(--text-mid);padding:0.5rem 0.8rem;border:1px solid var(--border);border-radius:6px;transition:.2s">
-                  <input type="radio" name="searchMode" value="hybrid" style="accent-color:var(--blue)"> Hybride (les deux)
-                </label>
-              </div>
-            </div>
-
             <div class="field-row">
               <div class="field">
                 <label for="category">Catégorie</label>
@@ -397,7 +382,7 @@
   <a href="https://www.led-solution.be" target="_blank">LED Solution</a>
   <span class="sep">|</span>
   Powered by <a href="https://stoy.be" target="_blank">STOY Automation</a>
-  <span class="sep">|</span> v2.0
+  <span class="sep">|</span> v2.1
 </div>
 
 <script>
@@ -418,8 +403,7 @@ function handleFile(f){
   imageMime=f.type;
   const r=new FileReader();
   r.onload=e=>{imageBase64=e.target.result.split(',')[1];imagePreview.src=e.target.result;
-    dropContent.style.display='none';previewContent.style.display='block';dropZone.classList.add('has-file');
-    document.getElementById('searchModeField').style.display='block'};
+    dropContent.style.display='none';previewContent.style.display='block';dropZone.classList.add('has-file')};
   r.readAsDataURL(f);
 }
 imageInput.addEventListener('change',function(){handleFile(this.files[0])});
@@ -427,8 +411,7 @@ dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.a
 dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragover'));
 dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('dragover');handleFile(e.dataTransfer.files[0])});
 removeImageBtn.addEventListener('click',e=>{e.stopPropagation();imageBase64=imageMime=null;imageInput.value='';
-  dropContent.style.display='block';previewContent.style.display='none';dropZone.classList.remove('has-file');
-  document.getElementById('searchModeField').style.display='none'});
+  dropContent.style.display='block';previewContent.style.display='none';dropZone.classList.remove('has-file')});
 
 function md(s){
   // Split by double newline into blocks, process each
@@ -472,9 +455,9 @@ function inline(s){
 }
 
 function renderTable(products){
-  const simClass=s=>s>=88?'sim-high':s>=85?'sim-mid':'sim-low';
+  const simClass=s=>s>=85?'sim-high':s>=50?'sim-mid':'sim-low';
   let h='<div class="ptable-wrap"><table class="ptable"><thead><tr>';
-  h+='<th>#</th><th>Photo</th><th>Cat\u00e9gorie</th><th>R\u00e9f\u00e9rence / Produit</th><th>Specs</th><th>Prix</th><th>Sim.</th><th>Lien</th>';
+  h+='<th>#</th><th>Photo</th><th>Cat\u00e9gorie</th><th>R\u00e9f\u00e9rence / Produit</th><th>Specs</th><th>Prix</th><th>Visuel</th><th>S\u00e9mant.</th><th>Lien</th>';
   h+='</tr></thead><tbody>';
   products.forEach((p,i)=>{
     const sp=p.specs||{};
@@ -484,14 +467,17 @@ function renderTable(products){
     if(sp.ip_rating)specs.push(sp.ip_rating);
     if(sp.autonomy_h)specs.push(sp.autonomy_h+'h');
     if(sp.color)specs.push(sp.color);
+    const clipSim=p.similarity_clip||0;
+    const textSim=p.similarity_text||0;
     h+='<tr>';
     h+='<td>'+(i+1)+'</td>';
-    h+='<td>'+(p.photo?'<img class="thumb" src="'+p.photo+'" alt="'+p.reference+'" loading="lazy">':'—')+'</td>';
+    h+='<td>'+(p.photo?'<img class="thumb" src="'+p.photo+'" alt="'+p.reference+'" loading="lazy">':'\u2014')+'</td>';
     h+='<td><span class="cat">'+p.category+'</span></td>';
     h+='<td><span class="ref">'+p.reference+'</span><br><span class="name">'+p.name+'</span></td>';
-    h+='<td><span class="specs-mini">'+(specs.join(' | ')||'—')+'</span></td>';
-    h+='<td><span class="price">'+(p.price?p.price+' \u20ac':'—')+'</span></td>';
-    h+='<td><span class="sim '+simClass(p.similarity)+'">'+p.similarity+'%</span></td>';
+    h+='<td><span class="specs-mini">'+(specs.join(' | ')||'\u2014')+'</span></td>';
+    h+='<td><span class="price">'+(p.price?p.price+' \u20ac':'\u2014')+'</span></td>';
+    h+='<td><span class="sim '+simClass(clipSim)+'">'+(clipSim?clipSim+'%':'\u2014')+'</span></td>';
+    h+='<td><span class="sim '+simClass(textSim)+'">'+(textSim?textSim+'%':'\u2014')+'</span></td>';
     h+='<td>'+(p.url?'<a class="link" href="'+p.url+'" target="_blank">Voir</a>':'')+'</td>';
     h+='</tr>';
   });
@@ -504,8 +490,7 @@ form.addEventListener('submit',async e=>{
   const query=document.getElementById('query').value.trim();
   if(!query&&!imageBase64){errorMsg.textContent='Veuillez saisir une recherche ou uploader une photo.';errorMsg.classList.add('active');return}
   const payload={query:query||'Recherche par image'};
-  if(imageBase64){payload.image_base64=imageBase64;payload.image_mime=imageMime;
-    payload.search_mode=document.querySelector('input[name="searchMode"]:checked').value}
+  if(imageBase64){payload.image_base64=imageBase64;payload.image_mime=imageMime}
   const cat=document.getElementById('category').value;if(cat)payload.category=cat;
   const bud=document.getElementById('budget').value;if(bud)payload.budget_max=parseFloat(bud);
 
