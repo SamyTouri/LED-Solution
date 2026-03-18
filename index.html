@@ -7,628 +7,391 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --primary: #0a1628;
-      --primary-600: #1a3050;
-      --accent: #04bfe0;
-      --accent-hover: #039dba;
-      --accent-glow: rgba(4, 191, 224, 0.12);
-      --accent-light: rgba(4, 191, 224, 0.08);
-      --warm: #f59e0b;
-      --bg: #f4f7fa;
-      --card: #ffffff;
-      --text: #1e293b;
-      --text-secondary: #64748b;
-      --text-muted: #94a3b8;
-      --border: #e2e8f0;
-      --border-light: #f1f5f9;
-      --success: #10b981;
-      --error: #ef4444;
-      --radius: 16px;
-      --radius-sm: 10px;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
-      --shadow: 0 4px 24px rgba(0,0,0,0.06);
-      --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --cyan:#22d3ee;--cyan-dim:rgba(34,211,238,0.12);--cyan-glow:rgba(34,211,238,0.25);
+      --blue:#3b82f6;--bg:#081120;--card:rgba(255,255,255,0.06);
+      --border:rgba(255,255,255,0.10);--border-h:rgba(34,211,238,0.30);
+      --text:#ffffff;--text-dim:#94a3b8;--text-mid:#cbd5e1;
+      --input-bg:rgba(255,255,255,0.05);--input-border:rgba(255,255,255,0.05);
+      --radius:1.5rem;--radius-sm:1rem;
+    }
+    body{
+      font-family:'Inter',system-ui,sans-serif;
+      background:radial-gradient(circle at top,rgba(34,211,238,0.14),transparent 35%),
+                 linear-gradient(180deg,#081120 0%,#0b1328 45%,#0f172a 100%);
+      color:var(--text);min-height:100vh;overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
     }
 
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
-    }
+    /* Ambient blurs */
+    .ambient{position:fixed;inset:0;pointer-events:none;z-index:0}
+    .ambient .b1{position:absolute;top:-6rem;left:50%;transform:translateX(-50%);width:18rem;height:18rem;border-radius:50%;background:rgba(34,211,238,0.15);filter:blur(80px)}
+    .ambient .b2{position:absolute;top:33%;left:-5rem;width:18rem;height:18rem;border-radius:50%;background:rgba(59,130,246,0.08);filter:blur(80px)}
+    .ambient .b3{position:absolute;bottom:0;right:0;width:20rem;height:20rem;border-radius:50%;background:rgba(168,85,247,0.07);filter:blur(80px)}
 
-    /* ===== HEADER ===== */
-    .header {
-      position: relative;
-      color: white;
-      padding: 3rem 1.5rem 4.5rem;
-      text-align: center;
-      overflow: hidden;
-      min-height: 280px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .header-bg {
-      position: absolute;
-      inset: 0;
-      background: url('https://www.led-solution.be/images/SLIDERP1/n_led-solution05a.jpg') center/cover no-repeat;
-      filter: brightness(0.3);
-      z-index: 0;
-    }
-    .header-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(10,22,40,0.85) 0%, rgba(4,191,224,0.15) 100%);
-      z-index: 1;
-    }
-    .header-content {
-      position: relative;
-      z-index: 2;
-      max-width: 680px;
-    }
-    .header-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      background: rgba(4,191,224,0.12);
-      border: 1px solid rgba(4,191,224,0.25);
-      border-radius: 20px;
-      padding: 5px 16px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--accent);
-      margin-bottom: 1.2rem;
-      backdrop-filter: blur(8px);
-      letter-spacing: 0.3px;
-      text-transform: uppercase;
-    }
-    .header-badge .dot {
-      width: 7px; height: 7px;
-      background: var(--accent);
-      border-radius: 50%;
-      animation: pulse-dot 2s ease-in-out infinite;
-      box-shadow: 0 0 6px var(--accent);
-    }
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--accent); }
-      50% { opacity: 0.4; box-shadow: 0 0 2px var(--accent); }
-    }
-    .header h1 {
-      font-size: 2.2rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      margin-bottom: 0.6rem;
-      text-shadow: 0 2px 12px rgba(0,0,0,0.3);
-    }
-    .header h1 .brand {
-      color: var(--accent);
-    }
-    .header p {
-      font-size: 1rem;
-      color: rgba(255,255,255,0.7);
-      font-weight: 400;
-      line-height: 1.6;
-    }
-    .header p strong {
-      color: white;
-      font-weight: 600;
-    }
+    /* Layout */
+    .page{position:relative;z-index:1;max-width:80rem;margin:0 auto;min-height:100vh;display:flex;align-items:center;padding:2rem 1.5rem}
+    .grid{display:grid;grid-template-columns:1.05fr 0.95fr;gap:2.5rem;width:100%;align-items:center}
+    @media(max-width:1024px){.grid{grid-template-columns:1fr;gap:2rem}}
 
-    /* ===== CONTAINER ===== */
-    .container {
-      max-width: 880px;
-      margin: -2.5rem auto 0;
-      padding: 0 1.5rem 2rem;
-      position: relative;
-      z-index: 3;
-    }
+    /* Left column */
+    .brand-row{display:flex;align-items:center;gap:1rem;margin-bottom:2rem}
+    .logo-box{border-radius:1rem;border:1px solid var(--border);background:rgba(255,255,255,0.08);padding:0.7rem;backdrop-filter:blur(16px)}
+    .logo-box img{height:2.2rem;width:auto}
+    .badge{display:inline-flex;align-items:center;gap:0.5rem;border-radius:2rem;border:1px solid var(--cyan-glow);background:rgba(255,255,255,0.04);padding:0.4rem 1rem;font-size:0.8rem;font-weight:500;backdrop-filter:blur(12px);color:var(--cyan)}
+    .badge .dot{width:0.5rem;height:0.5rem;border-radius:50%;background:var(--cyan);animation:pulse 2s ease-in-out infinite;box-shadow:0 0 8px var(--cyan)}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 
-    /* ===== SEARCH CARD ===== */
-    .search-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-lg);
-      padding: 2rem;
-      border: 1px solid var(--border-light);
-    }
-    .form-group { margin-bottom: 1.2rem; }
-    .form-group label {
-      display: block;
-      font-weight: 600;
-      font-size: 0.78rem;
-      margin-bottom: 6px;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .form-group label .opt {
-      font-weight: 400;
-      color: var(--text-muted);
-      text-transform: none;
-      letter-spacing: 0;
-      font-size: 0.75rem;
-    }
-    .form-group textarea,
-    .form-group input,
-    .form-group select {
-      width: 100%;
-      padding: 0.7rem 0.9rem;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 0.9rem;
-      font-family: inherit;
-      color: var(--text);
-      transition: all 0.2s;
-      background: var(--bg);
-    }
-    .form-group textarea:focus,
-    .form-group input:focus,
-    .form-group select:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow);
-      background: white;
-    }
-    .form-group textarea {
-      resize: vertical;
-      min-height: 72px;
-    }
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-    @media (max-width: 600px) {
-      .form-row { grid-template-columns: 1fr; }
-      .header h1 { font-size: 1.6rem; }
-    }
+    .hero-title{font-size:2.6rem;font-weight:700;line-height:1.15;letter-spacing:-0.5px;margin-bottom:1.2rem}
+    .hero-title .grad{background:linear-gradient(135deg,#67e8f9,var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-sub{font-size:1.05rem;color:var(--text-mid);line-height:1.6;max-width:36rem;margin-bottom:2rem}
 
-    /* ===== DROP ZONE ===== */
-    .drop-zone {
-      border: 2px dashed var(--border);
-      border-radius: var(--radius-sm);
-      padding: 1.2rem;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.25s;
-      position: relative;
-      overflow: hidden;
-      background: var(--bg);
-    }
-    .drop-zone:hover, .drop-zone.dragover {
-      border-color: var(--accent);
-      background: var(--accent-light);
-    }
-    .drop-zone.has-file {
-      border-color: var(--success);
-      background: rgba(16,185,129,0.05);
-    }
-    .drop-zone input[type="file"] {
-      position: absolute; inset: 0; opacity: 0; cursor: pointer;
-    }
-    .drop-icon {
-      width: 40px; height: 40px;
-      margin: 0 auto 8px;
-      background: var(--accent-light);
-      border: 1px solid rgba(4,191,224,0.15);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem;
-    }
-    .drop-text {
-      color: var(--text-muted);
-      font-size: 0.8rem;
-    }
-    .drop-text strong { color: var(--accent); font-weight: 600; }
-    .drop-preview { max-height: 100px; border-radius: 8px; margin-top: 8px; }
-    .drop-remove {
-      display: inline-block; margin-top: 6px;
-      color: var(--error); font-size: 0.75rem;
-      cursor: pointer; font-weight: 500;
-    }
+    /* Hero image */
+    .hero-img-wrap{position:relative;border-radius:var(--radius);border:1px solid var(--border);background:var(--card);padding:0.7rem;backdrop-filter:blur(16px);overflow:hidden;margin-bottom:2rem}
+    .hero-img-wrap::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(34,211,238,0.08),transparent,rgba(59,130,246,0.08));pointer-events:none}
+    .hero-img{width:100%;height:16rem;object-fit:cover;border-radius:1.2rem;display:block}
+    .hero-caption{position:absolute;left:1.2rem;right:1.2rem;bottom:1.2rem;border-radius:1rem;border:1px solid var(--border);background:rgba(15,23,42,0.55);padding:0.8rem 1rem;backdrop-filter:blur(12px)}
+    .hero-caption .t{font-size:0.85rem;font-weight:600}
+    .hero-caption .s{font-size:0.8rem;color:var(--text-dim);margin-top:2px}
 
-    /* ===== BUTTON ===== */
-    .btn-search {
-      width: 100%;
-      padding: 0.85rem;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-size: 0.95rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      margin-top: 0.25rem;
-      letter-spacing: 0.3px;
-    }
-    .btn-search:hover {
-      background: var(--accent-hover);
-      box-shadow: 0 4px 20px rgba(4,191,224,0.35);
-      transform: translateY(-1px);
-    }
-    .btn-search:active { transform: translateY(0); }
-    .btn-search:disabled {
-      background: var(--border);
-      color: var(--text-muted);
-      cursor: not-allowed;
-      box-shadow: none;
-      transform: none;
-    }
+    /* Stats */
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;margin-bottom:1rem}
+    .stat{border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card);padding:1rem;backdrop-filter:blur(16px);transition:.3s}
+    .stat:hover{transform:translateY(-3px);border-color:var(--border-h);background:rgba(255,255,255,0.08)}
+    .stat .v{font-size:1.4rem;font-weight:700}
+    .stat .l{font-size:0.75rem;color:var(--text-dim);margin-top:2px}
+    @media(max-width:600px){.stats{grid-template-columns:1fr}.hero-title{font-size:1.8rem}}
 
-    /* ===== LOADING ===== */
-    .loading { text-align: center; padding: 4rem 1rem; display: none; }
-    .loading.active { display: block; }
-    .loader {
-      width: 44px; height: 44px;
-      border: 3px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      margin: 0 auto 1.2rem;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loading p {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-    .loading .sub {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-      font-weight: 400;
-    }
+    /* Right: Form card */
+    .form-wrap{position:relative}
+    .form-glow{position:absolute;inset:-0.5rem;border-radius:2rem;background:linear-gradient(135deg,rgba(34,211,238,0.2),rgba(59,130,246,0.12),rgba(168,85,247,0.15));filter:blur(30px);z-index:0}
+    .form-card{position:relative;z-index:1;border-radius:var(--radius);border:1px solid var(--border);background:rgba(255,255,255,0.06);padding:1.5rem;backdrop-filter:blur(24px)}
 
-    /* ===== RESULTS ===== */
-    .results { display: none; }
-    .results.active { display: block; animation: fadeIn 0.4s ease-out; }
-    .results-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-    .results-bar h2 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-    .btn-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 16px;
-      background: var(--card);
-      color: var(--text-secondary);
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-back:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
+    .form-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem}
+    .form-header .title-row{display:flex;align-items:center;gap:0.6rem}
+    .form-header .brand-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.2em;color:rgba(34,211,238,0.8)}
+    .form-header .title{font-size:1.3rem;font-weight:700;margin-top:0.2rem}
+    .form-header .ia-badge{border-radius:var(--radius-sm);border:1px solid rgba(34,211,238,0.2);background:rgba(34,211,238,0.08);padding:0.35rem 0.7rem;font-size:0.75rem;color:#a5f3fc;white-space:nowrap}
 
-    /* ===== AGENT RESPONSE ===== */
-    .agent-response {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border-light);
-      padding: 1.8rem 2rem;
-      line-height: 1.7;
-      font-size: 0.9rem;
-    }
-    .agent-response h2 {
-      color: var(--primary-600);
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-top: 2rem;
-      margin-bottom: 0.5rem;
-      padding-bottom: 0.4rem;
-      border-bottom: 2px solid var(--accent);
-    }
-    .agent-response h2:first-child { margin-top: 0; }
-    .agent-response h3 {
-      color: var(--primary-600);
-      font-size: 0.95rem;
-      font-weight: 700;
-      margin-top: 1.4rem;
-      margin-bottom: 0.3rem;
-    }
-    .agent-response h4 {
-      color: var(--text);
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-top: 1rem;
-      margin-bottom: 0.2rem;
-    }
-    .agent-response strong {
-      color: var(--primary);
-      font-weight: 600;
-    }
-    .agent-response img {
-      max-width: 160px;
-      height: auto;
-      border-radius: var(--radius-sm);
-      box-shadow: var(--shadow-sm);
-      margin: 8px 0;
-      display: block;
-      border: 1px solid var(--border-light);
-    }
-    .agent-response a {
-      color: var(--accent-hover);
-      text-decoration: none;
-      font-weight: 500;
-      border-bottom: 1px solid transparent;
-      transition: border-color 0.2s;
-    }
-    .agent-response a:hover { border-bottom-color: var(--accent); }
-    .agent-response ul, .agent-response ol {
-      padding-left: 1.3rem;
-      margin: 0.3rem 0;
-    }
-    .agent-response li {
-      margin-bottom: 1px;
-      padding-left: 2px;
-      line-height: 1.5;
-    }
-    .agent-response hr {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 1.5rem 0;
-    }
-    .agent-response p { margin-bottom: 0.5rem; }
+    /* Form fields */
+    .field{border-radius:var(--radius);border:1px solid var(--border);background:rgba(15,23,42,0.35);padding:1rem;margin-bottom:1rem;transition:.3s}
+    .field:hover,.field:focus-within{border-color:var(--border-h);background:rgba(15,23,42,0.5)}
+    .field label{display:block;font-size:0.8rem;font-weight:500;color:var(--text-mid);margin-bottom:0.5rem}
+    .field textarea,.field input,.field select{width:100%;background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--radius-sm);padding:0.8rem 1rem;color:white;font-family:inherit;font-size:0.9rem;resize:none;outline:none;transition:.3s}
+    .field textarea:focus,.field input:focus,.field select:focus{border-color:rgba(34,211,238,0.35);background:rgba(255,255,255,0.08)}
+    .field textarea{min-height:5.5rem}
+    .field select option{background:#0f172a;color:white}
+    .field .hint{display:flex;justify-content:space-between;align-items:center;margin-top:0.5rem;font-size:0.7rem;color:var(--text-dim)}
+    .field .hint .tag{background:rgba(255,255,255,0.04);padding:2px 8px;border-radius:2rem}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem}
+    @media(max-width:600px){.field-row{grid-template-columns:1fr}}
+    .budget-wrap{position:relative}
+    .budget-wrap .unit{position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-size:0.8rem;color:var(--text-dim)}
 
-    /* ===== ERROR ===== */
-    .error-msg {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: var(--error);
-      border-radius: var(--radius-sm);
-      padding: 0.8rem 1.2rem;
-      margin-bottom: 1rem;
-      display: none;
-      font-size: 0.85rem;
-      font-weight: 500;
-    }
-    .error-msg.active { display: block; }
+    /* Drop zone */
+    .drop{position:relative;overflow:hidden;border-radius:var(--radius);border:2px dashed var(--border-h);background:linear-gradient(135deg,rgba(34,211,238,0.06),rgba(59,130,246,0.06));padding:1.2rem;margin-bottom:1rem;transition:.3s;cursor:pointer}
+    .drop:hover{transform:translateY(-2px);border-color:rgba(34,211,238,0.45);background:linear-gradient(135deg,rgba(34,211,238,0.1),rgba(59,130,246,0.1))}
+    .drop::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at top,rgba(255,255,255,0.08),transparent 50%);pointer-events:none}
+    .drop input{position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2}
+    .drop-inner{position:relative;display:flex;flex-direction:column;align-items:center;gap:0.7rem;border-radius:1.2rem;border:1px solid var(--border);background:rgba(15,23,42,0.25);padding:2rem 1.5rem;text-align:center;backdrop-filter:blur(4px)}
+    .drop-icon{width:3.5rem;height:3.5rem;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);background:rgba(255,255,255,0.08);font-size:1.4rem;transition:.3s}
+    .drop:hover .drop-icon{transform:scale(1.08);background:rgba(255,255,255,0.12)}
+    .drop-title{font-size:1rem;font-weight:600}
+    .drop-sub{font-size:0.8rem;color:var(--text-mid)}
+    .drop-badge{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(255,255,255,0.06);border-radius:2rem;padding:0.25rem 0.7rem;font-size:0.7rem;color:#a5f3fc}
+    .drop-badge .dot{width:0.4rem;height:0.4rem;border-radius:50%;background:var(--cyan);animation:pulse 2s ease-in-out infinite}
+    .drop.has-file{border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.06)}
+    .drop-preview{max-height:6rem;border-radius:0.8rem;margin-top:0.5rem}
+    .drop-remove{color:#f87171;font-size:0.75rem;cursor:pointer;font-weight:500;margin-top:0.3rem;position:relative;z-index:3}
 
-    /* ===== FOOTER ===== */
-    .footer {
-      text-align: center;
-      padding: 1.5rem 1rem;
-      color: var(--text-muted);
-      font-size: 0.75rem;
-    }
-    .footer a {
-      color: var(--accent-hover);
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .footer .sep { margin: 0 6px; opacity: 0.4; }
+    /* Button */
+    .btn{position:relative;width:100%;overflow:hidden;border-radius:var(--radius-sm);border:none;background:linear-gradient(135deg,var(--cyan),#0ea5e9,var(--blue));padding:1rem;font-size:1.05rem;font-weight:700;color:white;cursor:pointer;box-shadow:0 20px 50px rgba(14,165,233,0.3);transition:.3s;font-family:inherit}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 25px 60px rgba(14,165,233,0.4)}
+    .btn:active{transform:translateY(0)}
+    .btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none}
+    .btn .shine{position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);transition:1s}
+    .btn:hover .shine{transform:translateX(100%)}
+    .btn .label{position:relative;display:flex;align-items:center;justify-content:center;gap:0.5rem}
+    .btn .arrow{transition:.3s}
+    .btn:hover .arrow{transform:translateX(4px)}
 
-    /* ===== ANIMATIONS ===== */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* Loading */
+    .loading{display:none;text-align:center;padding:4rem 1rem}
+    .loading.active{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:20rem}
+    .loader{width:3rem;height:3rem;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:1.2rem}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading p{color:var(--text-mid);font-size:0.95rem;font-weight:500}
+    .loading .sub{font-size:0.8rem;color:var(--text-dim);margin-top:4px}
+
+    /* Results */
+    .results{display:none}
+    .results.active{display:block;animation:fadeIn .4s ease-out}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .results-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+    .results-bar h2{font-size:1.2rem;font-weight:700}
+    .btn-back{display:inline-flex;align-items:center;gap:6px;padding:0.5rem 1rem;background:var(--card);color:var(--text-mid);border:1px solid var(--border);border-radius:0.6rem;font-size:0.8rem;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit}
+    .btn-back:hover{border-color:var(--cyan);color:var(--cyan)}
+
+    /* Agent response */
+    .response{border-radius:var(--radius);border:1px solid var(--border);background:rgba(255,255,255,0.04);padding:1.8rem 2rem;backdrop-filter:blur(16px);line-height:1.7;font-size:0.9rem}
+    .response h2{color:var(--cyan);font-size:1.1rem;font-weight:700;margin-top:2rem;margin-bottom:0.5rem;padding-bottom:0.4rem;border-bottom:1px solid rgba(34,211,238,0.2)}
+    .response h2:first-child{margin-top:0}
+    .response h3{color:#7dd3fc;font-size:0.95rem;font-weight:700;margin-top:1.4rem;margin-bottom:0.3rem}
+    .response h4{color:var(--text-mid);font-size:0.9rem;font-weight:600;margin-top:1rem;margin-bottom:0.2rem}
+    .response strong{color:white;font-weight:600}
+    .response img{max-width:10rem;border-radius:0.8rem;border:1px solid var(--border);margin:0.5rem 0;display:block}
+    .response a{color:var(--cyan);text-decoration:none;font-weight:500;border-bottom:1px solid transparent;transition:.2s}
+    .response a:hover{border-bottom-color:var(--cyan)}
+    .response ul,.response ol{padding-left:1.3rem;margin:0.3rem 0}
+    .response li{margin-bottom:1px;line-height:1.5}
+    .response hr{border:none;border-top:1px solid var(--border);margin:1.5rem 0}
+    .response p{margin-bottom:0.5rem}
+
+    /* Error */
+    .error{display:none;border-radius:var(--radius-sm);border:1px solid rgba(248,113,113,0.3);background:rgba(248,113,113,0.08);padding:0.8rem 1.2rem;margin-bottom:1rem;font-size:0.85rem;color:#fca5a5;font-weight:500}
+    .error.active{display:block}
+
+    /* Footer */
+    .footer{position:relative;z-index:1;text-align:center;padding:1.5rem;font-size:0.75rem;color:var(--text-dim)}
+    .footer a{color:var(--cyan);text-decoration:none;font-weight:500}
+    .footer .sep{margin:0 6px;opacity:.3}
+
+    /* Hide left column in results mode on mobile */
+    @media(max-width:1024px){
+      .left-col.hidden-mobile{display:none}
+      .grid.results-mode{grid-template-columns:1fr}
     }
-    .search-card { animation: fadeIn 0.35s ease-out; }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <div class="header-bg"></div>
-    <div class="header-overlay"></div>
-    <div class="header-content">
-      <div class="header-badge"><span class="dot"></span> Recherche IA</div>
-      <h1><span class="brand">LED Solution</span> &mdash; Recherche Produits</h1>
-      <p>D&eacute;crivez votre besoin ou uploadez une photo &mdash; notre IA analyse <strong>1 684 r&eacute;f&eacute;rences</strong> et vous recommande les luminaires adapt&eacute;s.</p>
-    </div>
-  </div>
+<div class="ambient"><div class="b1"></div><div class="b2"></div><div class="b3"></div></div>
 
-  <div class="container">
+<div class="page">
+  <div class="grid" id="mainGrid">
 
-    <div class="error-msg" id="errorMsg"></div>
-
-    <div class="search-card" id="searchCard">
-      <form id="searchForm">
-        <div class="form-group">
-          <label for="query">Votre recherche</label>
-          <textarea id="query" placeholder="Ex: dalle LED 60x60 IP44 pour couloir h&ocirc;pital, &eacute;clairage d'urgence 3h autonomie, applique murale blanche IP65..."></textarea>
+    <!-- LEFT -->
+    <div class="left-col" id="leftCol">
+      <div class="brand-row">
+        <div class="logo-box">
+          <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='40' viewBox='0 0 200 40'><text x='0' y='30' font-family='Arial,sans-serif' font-size='26' font-weight='800' fill='%23ffffff'>LED</text><text x='65' y='30' font-family='Arial,sans-serif' font-size='26' font-weight='400' fill='%2322d3ee'>Solution</text></svg>" alt="LED Solution">
         </div>
-
-        <div class="form-group">
-          <label>Photo du produit <span class="opt">&mdash; optionnel</span></label>
-          <div class="drop-zone" id="dropZone">
-            <input type="file" id="imageInput" accept=".jpg,.jpeg,.png,.webp">
-            <div id="dropContent">
-              <div class="drop-icon">&#128247;</div>
-              <div class="drop-text"><strong>Cliquez</strong> ou glissez une photo ici</div>
-            </div>
-            <div id="previewContent" style="display:none">
-              <img class="drop-preview" id="imagePreview" alt="Aper&ccedil;u">
-              <div class="drop-remove" id="removeImage">Supprimer</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="category">Cat&eacute;gorie <span class="opt">&mdash; optionnel</span></label>
-            <select id="category">
-              <option value="">Toutes les cat&eacute;gories</option>
-              <option>ALIEN LED</option><option>ATLA</option><option>CLARITY</option>
-              <option>CRISTAL WALL</option><option>DALI</option><option>DUNA</option>
-              <option>ENERGY</option><option>ERIA</option><option>FLAME</option>
-              <option>HARPER</option><option>INFINITY</option><option>KONA</option>
-              <option>MYRA</option><option>NURIA</option><option>ODIN</option>
-              <option>OLED</option><option>OPT</option><option>PRODIGY</option>
-              <option>PRODIGY WALL</option><option>PRODIGY XL</option><option>SPY SYSTEM</option>
-              <option>TREND</option><option>TREND RECESSED</option><option>TREND WALL</option>
-              <option>VIALED</option><option>VIALED SIGN</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="budget">Budget max <span class="opt">&mdash; EUR, optionnel</span></label>
-            <input type="number" id="budget" placeholder="Ex: 500" min="0" step="10">
-          </div>
-        </div>
-
-        <button type="submit" class="btn-search" id="submitBtn">Rechercher</button>
-      </form>
-    </div>
-
-    <div class="loading" id="loading">
-      <div class="loader"></div>
-      <p>L'IA analyse votre demande...</p>
-      <p class="sub">Recherche s&eacute;mantique parmi 1 684 produits Linergy</p>
-    </div>
-
-    <div class="results" id="results">
-      <div class="results-bar">
-        <h2>R&eacute;sultats</h2>
-        <button class="btn-back" id="newSearchBtn">&#8592; Nouvelle recherche</button>
+        <div class="badge"><span class="dot"></span> Recherche IA</div>
       </div>
-      <div class="agent-response" id="agentResponse"></div>
+
+      <h1 class="hero-title">
+        Trouvez le luminaire avec une <span class="grad">recherche intelligente</span>
+      </h1>
+      <p class="hero-sub">
+        D&eacute;crivez un produit, ajoutez une photo, et laissez l'IA analyser <strong>1&nbsp;684 r&eacute;f&eacute;rences</strong> Linergy pour vous recommander les meilleurs choix.
+      </p>
+
+      <div class="hero-img-wrap">
+        <img class="hero-img" src="https://www.led-solution.be/images/SLIDERP1/n_led-solution05a.jpg" alt="LED Solution">
+        <div class="hero-caption">
+          <div class="t">S&eacute;lection intelligente de luminaires</div>
+          <div class="s">Texte + image + crit&egrave;res m&eacute;tier dans une seule interface.</div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="v">1 684</div><div class="l">r&eacute;f&eacute;rences analys&eacute;es</div></div>
+        <div class="stat"><div class="v">&lt; 30s</div><div class="l">pour une r&eacute;ponse</div></div>
+        <div class="stat"><div class="v">IA + image</div><div class="l">recherche hybride</div></div>
+      </div>
     </div>
 
+    <!-- RIGHT -->
+    <div class="right-col">
+
+      <div class="error" id="errorMsg"></div>
+
+      <!-- FORM -->
+      <div class="form-wrap" id="searchCard">
+        <div class="form-glow"></div>
+        <div class="form-card">
+          <div class="form-header">
+            <div>
+              <div class="title-row">
+                <div class="brand-label">LED Solution</div>
+              </div>
+              <div class="title">Recherche Produits</div>
+            </div>
+            <div class="ia-badge">IA assist&eacute;e</div>
+          </div>
+
+          <form id="searchForm">
+            <div class="field">
+              <label for="query">Votre recherche</label>
+              <textarea id="query" rows="4" placeholder="Ex : dalle LED 60&times;60 IP44, applique murale blanche IP65, &eacute;clairage de secours 3h..."></textarea>
+              <div class="hint">
+                <span>D&eacute;crivez le style, la forme, l'usage</span>
+                <span class="tag">Prompt assist&eacute;</span>
+              </div>
+            </div>
+
+            <div class="drop" id="dropZone">
+              <input type="file" id="imageInput" accept=".jpg,.jpeg,.png,.webp">
+              <div class="drop-inner" id="dropContent">
+                <div class="drop-icon">&#128247;</div>
+                <div>
+                  <div class="drop-title">Ajoutez une photo du produit</div>
+                  <div class="drop-sub">Glisser-d&eacute;poser ou cliquer pour importer</div>
+                </div>
+                <div class="drop-badge"><span class="dot"></span> Vision IA activ&eacute;e</div>
+              </div>
+              <div id="previewContent" style="display:none">
+                <div class="drop-inner">
+                  <img class="drop-preview" id="imagePreview" alt="Aper&ccedil;u">
+                  <div class="drop-remove" id="removeImage">Supprimer la photo</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="category">Cat&eacute;gorie</label>
+                <select id="category">
+                  <option value="">Toutes les cat&eacute;gories</option>
+                  <option>ALIEN LED</option><option>ATLA</option><option>CLARITY</option>
+                  <option>CRISTAL WALL</option><option>DALI</option><option>DUNA</option>
+                  <option>ENERGY</option><option>ERIA</option><option>FLAME</option>
+                  <option>HARPER</option><option>INFINITY</option><option>KONA</option>
+                  <option>MYRA</option><option>NURIA</option><option>ODIN</option>
+                  <option>OLED</option><option>OPT</option><option>PRODIGY</option>
+                  <option>PRODIGY WALL</option><option>PRODIGY XL</option><option>SPY SYSTEM</option>
+                  <option>TREND</option><option>TREND RECESSED</option><option>TREND WALL</option>
+                  <option>VIALED</option><option>VIALED SIGN</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="budget">Budget max</label>
+                <div class="budget-wrap">
+                  <input type="number" id="budget" placeholder="Ex : 500" min="0" step="10">
+                  <span class="unit">EUR</span>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">
+              <span class="shine"></span>
+              <span class="label">Lancer la recherche <span class="arrow">&rarr;</span></span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- LOADING -->
+      <div class="loading" id="loading">
+        <div class="loader"></div>
+        <p>L'IA analyse votre demande...</p>
+        <p class="sub">Recherche s&eacute;mantique parmi 1 684 produits Linergy</p>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="results" id="results">
+        <div class="results-bar">
+          <h2>R&eacute;sultats</h2>
+          <button class="btn-back" id="newSearchBtn">&#8592; Nouvelle recherche</button>
+        </div>
+        <div class="response" id="agentResponse"></div>
+      </div>
+
+    </div>
   </div>
+</div>
 
-  <div class="footer">
-    <a href="https://www.led-solution.be" target="_blank">LED Solution</a>
-    <span class="sep">|</span>
-    Powered by <a href="https://stoy.be" target="_blank">STOY Automation</a>
-  </div>
+<div class="footer">
+  <a href="https://www.led-solution.be" target="_blank">LED Solution</a>
+  <span class="sep">|</span>
+  Powered by <a href="https://stoy.be" target="_blank">STOY Automation</a>
+</div>
 
-  <script>
-    const API_URL = 'https://ia.codevo.be/webhook/led-api';
+<script>
+const API_URL='https://ia.codevo.be/webhook/led-api';
+const form=document.getElementById('searchForm'),searchCard=document.getElementById('searchCard'),
+  loadingEl=document.getElementById('loading'),resultsEl=document.getElementById('results'),
+  agentResponse=document.getElementById('agentResponse'),errorMsg=document.getElementById('errorMsg'),
+  dropZone=document.getElementById('dropZone'),imageInput=document.getElementById('imageInput'),
+  dropContent=document.getElementById('dropContent'),previewContent=document.getElementById('previewContent'),
+  imagePreview=document.getElementById('imagePreview'),removeImageBtn=document.getElementById('removeImage'),
+  newSearchBtn=document.getElementById('newSearchBtn'),leftCol=document.getElementById('leftCol'),
+  mainGrid=document.getElementById('mainGrid');
 
-    const form = document.getElementById('searchForm');
-    const searchCard = document.getElementById('searchCard');
-    const loadingEl = document.getElementById('loading');
-    const resultsEl = document.getElementById('results');
-    const agentResponse = document.getElementById('agentResponse');
-    const errorMsg = document.getElementById('errorMsg');
-    const dropZone = document.getElementById('dropZone');
-    const imageInput = document.getElementById('imageInput');
-    const dropContent = document.getElementById('dropContent');
-    const previewContent = document.getElementById('previewContent');
-    const imagePreview = document.getElementById('imagePreview');
-    const removeImageBtn = document.getElementById('removeImage');
-    const newSearchBtn = document.getElementById('newSearchBtn');
+let imageBase64=null,imageMime=null;
 
-    let imageBase64 = null, imageMime = null;
+function handleFile(f){
+  if(!f||!f.type.startsWith('image/'))return;
+  imageMime=f.type;
+  const r=new FileReader();
+  r.onload=e=>{imageBase64=e.target.result.split(',')[1];imagePreview.src=e.target.result;
+    dropContent.style.display='none';previewContent.style.display='block';dropZone.classList.add('has-file')};
+  r.readAsDataURL(f);
+}
+imageInput.addEventListener('change',function(){handleFile(this.files[0])});
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('dragover')});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('dragover');handleFile(e.dataTransfer.files[0])});
+removeImageBtn.addEventListener('click',e=>{e.stopPropagation();imageBase64=imageMime=null;imageInput.value='';
+  dropContent.style.display='block';previewContent.style.display='none';dropZone.classList.remove('has-file')});
 
-    function handleFile(file) {
-      if (!file || !file.type.startsWith('image/')) return;
-      imageMime = file.type;
-      const reader = new FileReader();
-      reader.onload = e => {
-        const dataUrl = e.target.result;
-        imageBase64 = dataUrl.split(',')[1];
-        imagePreview.src = dataUrl;
-        dropContent.style.display = 'none';
-        previewContent.style.display = 'block';
-        dropZone.classList.add('has-file');
-      };
-      reader.readAsDataURL(file);
-    }
-    imageInput.addEventListener('change', function() { handleFile(this.files[0]); });
-    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-    dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
-    removeImageBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      imageBase64 = imageMime = null;
-      imageInput.value = '';
-      dropContent.style.display = 'block';
-      previewContent.style.display = 'none';
-      dropZone.classList.remove('has-file');
-    });
+function md(s){
+  let h=s;
+  h=h.replace(/^#### (.+)$/gm,'<h4>$1</h4>');
+  h=h.replace(/^### (.+)$/gm,'<h3>$1</h3>');
+  h=h.replace(/^## (.+)$/gm,'<h2>$1</h2>');
+  h=h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  h=h.replace(/\*(.+?)\*/g,'<em>$1</em>');
+  h=h.replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img src="$2" alt="$1" loading="lazy">');
+  h=h.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+  h=h.replace(/^---$/gm,'<hr>');
+  h=h.replace(/^- (.+)$/gm,'<li>$1</li>');
+  h=h.replace(/(<li>[\s\S]*?<\/li>(\n)?)+/g,m=>'<ul>'+m+'</ul>');
+  h=h.replace(/\n\n/g,'</p><p>');
+  h=h.replace(/\n/g,'<br>');
+  h='<p>'+h+'</p>';
+  h=h.replace(/<p>\s*<\/p>/g,'');
+  h=h.replace(/<p>(<h[234]>)/g,'$1');
+  h=h.replace(/(<\/h[234]>)<\/p>/g,'$1');
+  h=h.replace(/<p>(<hr>)<\/p>/g,'$1');
+  h=h.replace(/<p>(<ul>)/g,'$1');
+  h=h.replace(/(<\/ul>)<\/p>/g,'$1');
+  h=h.replace(/<p>(<img )/g,'$1');
+  return h;
+}
 
-    function md(s) {
-      let h = s;
-      h = h.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
-      h = h.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-      h = h.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-      h = h.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-      h = h.replace(/\*(.+?)\*/g, '<em>$1</em>');
-      h = h.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" loading="lazy">');
-      h = h.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-      h = h.replace(/^---$/gm, '<hr>');
-      h = h.replace(/^- (.+)$/gm, '<li>$1</li>');
-      h = h.replace(/(<li>[\s\S]*?<\/li>(\n)?)+/g, m => '<ul>' + m + '</ul>');
-      h = h.replace(/\n\n/g, '</p><p>');
-      h = h.replace(/\n/g, '<br>');
-      h = '<p>' + h + '</p>';
-      h = h.replace(/<p>\s*<\/p>/g, '');
-      h = h.replace(/<p>(<h[234]>)/g, '$1');
-      h = h.replace(/(<\/h[234]>)<\/p>/g, '$1');
-      h = h.replace(/<p>(<hr>)<\/p>/g, '$1');
-      h = h.replace(/<p>(<ul>)/g, '$1');
-      h = h.replace(/(<\/ul>)<\/p>/g, '$1');
-      h = h.replace(/<p>(<img )/g, '$1');
-      return h;
-    }
+form.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const query=document.getElementById('query').value.trim();
+  if(!query&&!imageBase64){errorMsg.textContent='Veuillez saisir une recherche ou uploader une photo.';errorMsg.classList.add('active');return}
+  const payload={query:query||'Recherche par image'};
+  if(imageBase64){payload.image_base64=imageBase64;payload.image_mime=imageMime}
+  const cat=document.getElementById('category').value;if(cat)payload.category=cat;
+  const bud=document.getElementById('budget').value;if(bud)payload.budget_max=parseFloat(bud);
 
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
-      const query = document.getElementById('query').value.trim();
-      if (!query && !imageBase64) {
-        errorMsg.textContent = 'Veuillez saisir une recherche ou uploader une photo.';
-        errorMsg.classList.add('active');
-        return;
-      }
-      const payload = { query: query || 'Recherche par image' };
-      if (imageBase64) { payload.image_base64 = imageBase64; payload.image_mime = imageMime; }
-      const cat = document.getElementById('category').value;
-      if (cat) payload.category = cat;
-      const bud = document.getElementById('budget').value;
-      if (bud) payload.budget_max = parseFloat(bud);
+  searchCard.style.display='none';resultsEl.classList.remove('active');errorMsg.classList.remove('active');
+  loadingEl.classList.add('active');
 
-      searchCard.style.display = 'none';
-      resultsEl.classList.remove('active');
-      errorMsg.classList.remove('active');
-      loadingEl.classList.add('active');
+  try{
+    const resp=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!resp.ok)throw new Error('Erreur serveur ('+resp.status+')');
+    const data=await resp.json();
+    agentResponse.innerHTML=md(data.output||'Aucune r\u00e9ponse.');
+    loadingEl.classList.remove('active');resultsEl.classList.add('active');
+    leftCol.classList.add('hidden-mobile');mainGrid.classList.add('results-mode');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }catch(err){
+    loadingEl.classList.remove('active');searchCard.style.display='block';
+    errorMsg.textContent=err.message;errorMsg.classList.add('active');
+  }
+});
 
-      try {
-        const resp = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (!resp.ok) throw new Error('Erreur serveur (' + resp.status + ')');
-        const data = await resp.json();
-        agentResponse.innerHTML = md(data.output || 'Aucune r\u00e9ponse.');
-        loadingEl.classList.remove('active');
-        resultsEl.classList.add('active');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } catch (err) {
-        loadingEl.classList.remove('active');
-        searchCard.style.display = 'block';
-        errorMsg.textContent = err.message;
-        errorMsg.classList.add('active');
-      }
-    });
-
-    newSearchBtn.addEventListener('click', () => {
-      resultsEl.classList.remove('active');
-      searchCard.style.display = 'block';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  </script>
-
+newSearchBtn.addEventListener('click',()=>{
+  resultsEl.classList.remove('active');searchCard.style.display='block';
+  leftCol.classList.remove('hidden-mobile');mainGrid.classList.remove('results-mode');
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+</script>
 </body>
 </html>
