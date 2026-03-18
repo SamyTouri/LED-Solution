@@ -305,6 +305,21 @@
               </div>
             </div>
 
+            <div class="field" id="searchModeField" style="display:none">
+              <label>Mode de recherche image</label>
+              <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
+                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.82rem;color:var(--text-mid);padding:0.5rem 0.8rem;border:1px solid var(--border);border-radius:6px;transition:.2s">
+                  <input type="radio" name="searchMode" value="clip_only" checked style="accent-color:var(--blue)"> Similarit&eacute; visuelle (CLIP)
+                </label>
+                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.82rem;color:var(--text-mid);padding:0.5rem 0.8rem;border:1px solid var(--border);border-radius:6px;transition:.2s">
+                  <input type="radio" name="searchMode" value="vision_text" style="accent-color:var(--blue)"> Description IA (Vision)
+                </label>
+                <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.82rem;color:var(--text-mid);padding:0.5rem 0.8rem;border:1px solid var(--border);border-radius:6px;transition:.2s">
+                  <input type="radio" name="searchMode" value="hybrid" style="accent-color:var(--blue)"> Hybride (les deux)
+                </label>
+              </div>
+            </div>
+
             <div class="field-row">
               <div class="field">
                 <label for="category">Catégorie</label>
@@ -382,7 +397,8 @@ function handleFile(f){
   imageMime=f.type;
   const r=new FileReader();
   r.onload=e=>{imageBase64=e.target.result.split(',')[1];imagePreview.src=e.target.result;
-    dropContent.style.display='none';previewContent.style.display='block';dropZone.classList.add('has-file')};
+    dropContent.style.display='none';previewContent.style.display='block';dropZone.classList.add('has-file');
+    document.getElementById('searchModeField').style.display='block'};
   r.readAsDataURL(f);
 }
 imageInput.addEventListener('change',function(){handleFile(this.files[0])});
@@ -390,7 +406,8 @@ dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.a
 dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragover'));
 dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('dragover');handleFile(e.dataTransfer.files[0])});
 removeImageBtn.addEventListener('click',e=>{e.stopPropagation();imageBase64=imageMime=null;imageInput.value='';
-  dropContent.style.display='block';previewContent.style.display='none';dropZone.classList.remove('has-file')});
+  dropContent.style.display='block';previewContent.style.display='none';dropZone.classList.remove('has-file');
+  document.getElementById('searchModeField').style.display='none'});
 
 function md(s){
   let h=s;
@@ -422,7 +439,8 @@ form.addEventListener('submit',async e=>{
   const query=document.getElementById('query').value.trim();
   if(!query&&!imageBase64){errorMsg.textContent='Veuillez saisir une recherche ou uploader une photo.';errorMsg.classList.add('active');return}
   const payload={query:query||'Recherche par image'};
-  if(imageBase64){payload.image_base64=imageBase64;payload.image_mime=imageMime}
+  if(imageBase64){payload.image_base64=imageBase64;payload.image_mime=imageMime;
+    payload.search_mode=document.querySelector('input[name="searchMode"]:checked').value}
   const cat=document.getElementById('category').value;if(cat)payload.category=cat;
   const bud=document.getElementById('budget').value;if(bud)payload.budget_max=parseFloat(bud);
 
