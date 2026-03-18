@@ -446,7 +446,7 @@
       <form id="searchForm">
         <div class="form-group">
           <label for="query">Votre recherche</label>
-          <textarea id="query" placeholder="Ex: dalle LED 60x60 IP44 pour couloir h&ocirc;pital, &eacute;clairage d'urgence 3h autonomie, applique murale blanche IP65..." required></textarea>
+          <textarea id="query" placeholder="Ex: dalle LED 60x60 IP44 pour couloir h&ocirc;pital, &eacute;clairage d'urgence 3h autonomie, applique murale blanche IP65..."></textarea>
         </div>
 
         <div class="form-group">
@@ -586,8 +586,12 @@
     form.addEventListener('submit', async e => {
       e.preventDefault();
       const query = document.getElementById('query').value.trim();
-      if (!query) return;
-      const payload = { query };
+      if (!query && !imageBase64) {
+        errorMsg.textContent = 'Veuillez saisir une recherche ou uploader une photo.';
+        errorMsg.classList.add('active');
+        return;
+      }
+      const payload = { query: query || 'Recherche par image' };
       if (imageBase64) { payload.image_base64 = imageBase64; payload.image_mime = imageMime; }
       const cat = document.getElementById('category').value;
       if (cat) payload.category = cat;
