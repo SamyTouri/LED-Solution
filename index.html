@@ -397,7 +397,7 @@
   <a href="https://www.led-solution.be" target="_blank">LED Solution</a>
   <span class="sep">|</span>
   Powered by <a href="https://stoy.be" target="_blank">STOY Automation</a>
-  <span class="sep">|</span> v1.9
+  <span class="sep">|</span> v2.0
 </div>
 
 <script>
@@ -516,6 +516,7 @@ form.addEventListener('submit',async e=>{
     const resp=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     if(!resp.ok)throw new Error('Erreur serveur ('+resp.status+')');
     const data=await resp.json();
+    console.log('API response keys:', Object.keys(data), 'products:', data.products?data.products.length:'NONE');
     // Render product table if products array available, otherwise fallback to markdown
     if(data.products&&data.products.length>0){
       agentResponse.innerHTML=renderTable(data.products)+(data.output?'<details style="margin-top:1.5rem"><summary style="cursor:pointer;color:var(--sky);font-size:0.85rem;font-weight:600">Analyse d\u00e9taill\u00e9e par l\'IA</summary><div style="margin-top:1rem">'+md(data.output)+'</div></details>':'');
