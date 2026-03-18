@@ -382,7 +382,7 @@
   <a href="https://www.led-solution.be" target="_blank">LED Solution</a>
   <span class="sep">|</span>
   Powered by <a href="https://stoy.be" target="_blank">STOY Automation</a>
-  <span class="sep">|</span> v2.1
+  <span class="sep">|</span> v2.2
 </div>
 
 <script>
@@ -457,7 +457,7 @@ function inline(s){
 function renderTable(products){
   const simClass=s=>s>=85?'sim-high':s>=50?'sim-mid':'sim-low';
   let h='<div class="ptable-wrap"><table class="ptable"><thead><tr>';
-  h+='<th>#</th><th>Photo</th><th>Cat\u00e9gorie</th><th>R\u00e9f\u00e9rence / Produit</th><th>Specs</th><th>Prix</th><th>Visuel</th><th>S\u00e9mant.</th><th>Lien</th>';
+  h+='<th>#</th><th>Photo</th><th>Cat\u00e9gorie</th><th>R\u00e9f\u00e9rence / Produit</th><th>Specs</th><th>Prix</th><th>Sim.</th><th>Lien</th>';
   h+='</tr></thead><tbody>';
   products.forEach((p,i)=>{
     const sp=p.specs||{};
@@ -467,8 +467,7 @@ function renderTable(products){
     if(sp.ip_rating)specs.push(sp.ip_rating);
     if(sp.autonomy_h)specs.push(sp.autonomy_h+'h');
     if(sp.color)specs.push(sp.color);
-    const clipSim=p.similarity_clip||0;
-    const textSim=p.similarity_text||0;
+    const sim=p.similarity||0;
     h+='<tr>';
     h+='<td>'+(i+1)+'</td>';
     h+='<td>'+(p.photo?'<img class="thumb" src="'+p.photo+'" alt="'+p.reference+'" loading="lazy">':'\u2014')+'</td>';
@@ -476,8 +475,7 @@ function renderTable(products){
     h+='<td><span class="ref">'+p.reference+'</span><br><span class="name">'+p.name+'</span></td>';
     h+='<td><span class="specs-mini">'+(specs.join(' | ')||'\u2014')+'</span></td>';
     h+='<td><span class="price">'+(p.price?p.price+' \u20ac':'\u2014')+'</span></td>';
-    h+='<td><span class="sim '+simClass(clipSim)+'">'+(clipSim?clipSim+'%':'\u2014')+'</span></td>';
-    h+='<td><span class="sim '+simClass(textSim)+'">'+(textSim?textSim+'%':'\u2014')+'</span></td>';
+    h+='<td><span class="sim '+simClass(sim)+'">'+sim+'%</span></td>';
     h+='<td>'+(p.url?'<a class="link" href="'+p.url+'" target="_blank">Voir</a>':'')+'</td>';
     h+='</tr>';
   });
@@ -501,12 +499,26 @@ form.addEventListener('submit',async e=>{
     const resp=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     if(!resp.ok)throw new Error('Erreur serveur ('+resp.status+')');
     const data=await resp.json();
-    console.log('API response keys:', Object.keys(data), 'products:', data.products?data.products.length:'NONE');
-    // Render product table if products array available, otherwise fallback to markdown
-    if(data.products&&data.products.length>0){
-      agentResponse.innerHTML=renderTable(data.products)+(data.output?'<details style="margin-top:1.5rem"><summary style="cursor:pointer;color:var(--sky);font-size:0.85rem;font-weight:600">Analyse d\u00e9taill\u00e9e par l\'IA</summary><div style="margin-top:1rem">'+md(data.output)+'</div></details>':'');
-    }else{
-      agentResponse.innerHTML=md(data.output||'Aucune r\u00e9ponse.');
+    const hasClip = data.products_clip && data.products_clip.length > 0;
+    const hasText = data.products_text && data.products_text.length > 0;
+    if (hasClip || hasText) {
+      let html = '';
+      if (hasClip) {
+        html += '<h3 style="color:var(--sky);margin-bottom:0.8rem;font-size:1rem">Similarit\u00e9 visuelle (CLIP) \u2014 ' + data.products_clip.length + ' r\u00e9sultats</h3>';
+        html += renderTable(data.products_clip);
+      }
+      if (hasText) {
+        html += '<h3 style="color:var(--sky);margin:1.5rem 0 0.8rem;font-size:1rem">Recherche s\u00e9mantique (Vision IA) \u2014 ' + data.products_text.length + ' r\u00e9sultats</h3>';
+        html += renderTable(data.products_text);
+      }
+      if (data.output) {
+        html += '<details style="margin-top:1.5rem"><summary style="cursor:pointer;color:var(--sky);font-size:0.85rem;font-weight:600">Analyse d\u00e9taill\u00e9e par l\'IA</summary><div style="margin-top:1rem">' + md(data.output) + '</div></details>';
+      }
+      agentResponse.innerHTML = html;
+    } else if (data.products && data.products.length > 0) {
+      agentResponse.innerHTML = renderTable(data.products) + (data.output ? '<details style="margin-top:1.5rem"><summary style="cursor:pointer;color:var(--sky);font-size:0.85rem;font-weight:600">Analyse d\u00e9taill\u00e9e par l\'IA</summary><div style="margin-top:1rem">' + md(data.output) + '</div></details>' : '');
+    } else {
+      agentResponse.innerHTML = md(data.output || 'Aucune r\u00e9ponse.');
     }
     loadingEl.classList.remove('active');resultsEl.classList.add('active');
     mainGrid.classList.add('results-mode');
