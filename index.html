@@ -195,6 +195,25 @@
     .response hr{border:none;border-top:1px solid var(--border);margin:1.5rem 0}
     .response p{margin-bottom:0.5rem}
 
+    /* Product table */
+    .ptable-wrap{overflow-x:auto;margin-bottom:1.5rem}
+    .ptable{width:100%;border-collapse:collapse;font-size:0.82rem}
+    .ptable th{text-align:left;padding:0.6rem 0.8rem;border-bottom:2px solid var(--border-h);color:var(--sky);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;white-space:nowrap}
+    .ptable td{padding:0.6rem 0.8rem;border-bottom:1px solid var(--border);vertical-align:middle}
+    .ptable tr:hover{background:rgba(14,165,233,0.04)}
+    .ptable .thumb{width:70px;height:52px;object-fit:contain;border-radius:4px;border:1px solid var(--border);background:white}
+    .ptable .cat{color:var(--sky);font-weight:600;font-size:0.72rem;white-space:nowrap}
+    .ptable .ref{font-weight:600;color:var(--text);font-size:0.8rem}
+    .ptable .name{color:var(--text-mid);font-size:0.78rem;max-width:250px}
+    .ptable .price{font-weight:700;color:var(--text);white-space:nowrap}
+    .ptable .sim{font-weight:600;white-space:nowrap}
+    .ptable .sim-high{color:#22c55e}
+    .ptable .sim-mid{color:var(--sky)}
+    .ptable .sim-low{color:var(--text-dim)}
+    .ptable .link{color:var(--sky);text-decoration:none;font-size:0.75rem;font-weight:500}
+    .ptable .link:hover{text-decoration:underline}
+    .ptable .specs-mini{color:var(--text-dim);font-size:0.7rem;margin-top:2px}
+
     /* Error */
     .error{display:none;border-radius:var(--radius-sm);border:1px solid rgba(248,113,113,0.2);background:rgba(248,113,113,0.05);padding:0.8rem 1.2rem;margin-bottom:0.8rem;font-size:0.82rem;color:#fca5a5;font-weight:500}
     .error.active{display:block}
@@ -205,9 +224,10 @@
     .footer a:hover{color:var(--ice)}
     .footer .sep{margin:0 8px;opacity:.25}
 
+    .grid.results-mode{grid-template-columns:1fr}
+    .grid.results-mode .left-col{display:none}
     @media(max-width:1024px){
       .left-col.hidden-mobile{display:none}
-      .grid.results-mode{grid-template-columns:1fr}
     }
 
     @keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
@@ -448,6 +468,34 @@ function inline(s){
   return h;
 }
 
+function renderTable(products){
+  const simClass=s=>s>=88?'sim-high':s>=85?'sim-mid':'sim-low';
+  let h='<div class="ptable-wrap"><table class="ptable"><thead><tr>';
+  h+='<th>#</th><th>Photo</th><th>Cat\u00e9gorie</th><th>R\u00e9f\u00e9rence / Produit</th><th>Specs</th><th>Prix</th><th>Sim.</th><th>Lien</th>';
+  h+='</tr></thead><tbody>';
+  products.forEach((p,i)=>{
+    const sp=p.specs||{};
+    const specs=[];
+    if(sp.power_w_detail||sp.power_w)specs.push((sp.power_w_detail||sp.power_w)+'W');
+    if(sp.lumens_emergency||sp.lumens)specs.push((sp.lumens_emergency||sp.lumens)+'lm');
+    if(sp.ip_rating)specs.push(sp.ip_rating);
+    if(sp.autonomy_h)specs.push(sp.autonomy_h+'h');
+    if(sp.color)specs.push(sp.color);
+    h+='<tr>';
+    h+='<td>'+(i+1)+'</td>';
+    h+='<td>'+(p.photo?'<img class="thumb" src="'+p.photo+'" alt="'+p.reference+'" loading="lazy">':'—')+'</td>';
+    h+='<td><span class="cat">'+p.category+'</span></td>';
+    h+='<td><span class="ref">'+p.reference+'</span><br><span class="name">'+p.name+'</span></td>';
+    h+='<td><span class="specs-mini">'+(specs.join(' | ')||'—')+'</span></td>';
+    h+='<td><span class="price">'+(p.price?p.price+' \u20ac':'—')+'</span></td>';
+    h+='<td><span class="sim '+simClass(p.similarity)+'">'+p.similarity+'%</span></td>';
+    h+='<td>'+(p.url?'<a class="link" href="'+p.url+'" target="_blank">Voir</a>':'')+'</td>';
+    h+='</tr>';
+  });
+  h+='</tbody></table></div>';
+  return h;
+}
+
 form.addEventListener('submit',async e=>{
   e.preventDefault();
   const query=document.getElementById('query').value.trim();
@@ -465,9 +513,14 @@ form.addEventListener('submit',async e=>{
     const resp=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     if(!resp.ok)throw new Error('Erreur serveur ('+resp.status+')');
     const data=await resp.json();
-    agentResponse.innerHTML=md(data.output||'Aucune r\u00e9ponse.');
+    // Render product table if products array available, otherwise fallback to markdown
+    if(data.products&&data.products.length>0){
+      agentResponse.innerHTML=renderTable(data.products)+(data.output?'<details style="margin-top:1.5rem"><summary style="cursor:pointer;color:var(--sky);font-size:0.85rem;font-weight:600">Analyse d\u00e9taill\u00e9e par l\'IA</summary><div style="margin-top:1rem">'+md(data.output)+'</div></details>':'');
+    }else{
+      agentResponse.innerHTML=md(data.output||'Aucune r\u00e9ponse.');
+    }
     loadingEl.classList.remove('active');resultsEl.classList.add('active');
-    leftCol.classList.add('hidden-mobile');mainGrid.classList.add('results-mode');
+    mainGrid.classList.add('results-mode');
     window.scrollTo({top:0,behavior:'smooth'});
   }catch(err){
     loadingEl.classList.remove('active');searchCard.style.display='block';
