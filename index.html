@@ -410,27 +410,41 @@ removeImageBtn.addEventListener('click',e=>{e.stopPropagation();imageBase64=imag
   document.getElementById('searchModeField').style.display='none'});
 
 function md(s){
+  // Split by double newline into blocks, process each
+  const blocks=s.split(/\n\n+/);
+  let out='';
+  for(let b of blocks){
+    b=b.trim();
+    if(!b)continue;
+    // Horizontal rule
+    if(/^---+$/.test(b)){out+='<hr>';continue}
+    // Headers
+    if(/^####\s/.test(b)){out+='<h4>'+inline(b.replace(/^####\s/,''))+'</h4>';continue}
+    if(/^###\s/.test(b)){out+='<h3>'+inline(b.replace(/^###\s/,''))+'</h3>';continue}
+    if(/^##\s/.test(b)){out+='<h2>'+inline(b.replace(/^##\s/,''))+'</h2>';continue}
+    // List block
+    if(/^- /.test(b)){
+      const items=b.split(/\n/).filter(l=>l.trim());
+      out+='<ul>'+items.map(l=>'<li>'+inline(l.replace(/^- /,''))+'</li>').join('')+'</ul>';
+      continue;
+    }
+    // Regular paragraph
+    out+='<p>'+inline(b)+'</p>';
+  }
+  return out;
+}
+function inline(s){
   let h=s;
-  h=h.replace(/^#### (.+)$/gm,'<h4>$1</h4>');
-  h=h.replace(/^### (.+)$/gm,'<h3>$1</h3>');
-  h=h.replace(/^## (.+)$/gm,'<h2>$1</h2>');
-  h=h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
-  h=h.replace(/\*(.+?)\*/g,'<em>$1</em>');
+  // Images first (before links)
   h=h.replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img src="$2" alt="$1" loading="lazy">');
+  // Links
   h=h.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
-  h=h.replace(/^---$/gm,'<hr>');
-  h=h.replace(/^- (.+)$/gm,'<li>$1</li>');
-  h=h.replace(/(<li>[\s\S]*?<\/li>(\n)?)+/g,m=>'<ul>'+m+'</ul>');
-  h=h.replace(/\n\n/g,'</p><p>');
+  // Bold (allow multiline content with dots)
+  h=h.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+  // Italic
+  h=h.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g,'<em>$1</em>');
+  // Line breaks within a block
   h=h.replace(/\n/g,'<br>');
-  h='<p>'+h+'</p>';
-  h=h.replace(/<p>\s*<\/p>/g,'');
-  h=h.replace(/<p>(<h[234]>)/g,'$1');
-  h=h.replace(/(<\/h[234]>)<\/p>/g,'$1');
-  h=h.replace(/<p>(<hr>)<\/p>/g,'$1');
-  h=h.replace(/<p>(<ul>)/g,'$1');
-  h=h.replace(/(<\/ul>)<\/p>/g,'$1');
-  h=h.replace(/<p>(<img )/g,'$1');
   return h;
 }
 
