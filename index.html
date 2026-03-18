@@ -397,7 +397,7 @@
   <a href="https://www.led-solution.be" target="_blank">LED Solution</a>
   <span class="sep">|</span>
   Powered by <a href="https://stoy.be" target="_blank">STOY Automation</a>
-  <span class="sep">|</span> v1.8
+  <span class="sep">|</span> v1.9
 </div>
 
 <script>
@@ -464,6 +464,8 @@ function inline(s){
   h=h.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
   // Italic
   h=h.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g,'<em>$1</em>');
+  // Raw URLs (not already in href or src)
+  h=h.replace(/(?<!href="|src="|")(https?:\/\/[^\s<)"]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
   // Line breaks within a block
   h=h.replace(/\n/g,'<br>');
   return h;
