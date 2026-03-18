@@ -195,6 +195,20 @@
     .response hr{border:none;border-top:1px solid var(--border);margin:1.5rem 0}
     .response p{margin-bottom:0.5rem}
 
+    /* Results blocks */
+    .results-block{margin-bottom:2rem;border-radius:var(--radius);border:1px solid var(--border);background:rgba(255,255,255,0.02);overflow:hidden}
+    .results-block-header{display:flex;align-items:center;gap:0.6rem;padding:1rem 1.5rem;background:rgba(14,165,233,0.06);border-bottom:1px solid rgba(14,165,233,0.12)}
+    .results-block-header h3{color:var(--sky);font-family:var(--font-head);font-size:1rem;font-weight:700;margin:0;flex:1}
+    .results-icon{font-size:1.2rem}
+    .results-count{color:var(--text-mid);font-size:0.75rem;font-weight:500;background:rgba(255,255,255,0.05);padding:0.25rem 0.6rem;border-radius:1rem;white-space:nowrap}
+    .results-desc{color:var(--text-dim);font-size:0.78rem;padding:0.5rem 1.5rem 0;margin:0}
+    .results-block .ptable-wrap{margin-bottom:0;padding:0.5rem 1rem 1rem}
+
+    .ai-details{margin-top:1.5rem;border-radius:var(--radius);border:1px solid var(--border);overflow:hidden}
+    .ai-details summary{cursor:pointer;color:var(--sky);font-size:0.85rem;font-weight:600;padding:0.8rem 1.2rem;background:rgba(255,255,255,0.02);transition:.2s}
+    .ai-details summary:hover{background:rgba(14,165,233,0.04)}
+    .ai-details .ai-content{padding:1rem 1.5rem}
+
     /* Product table */
     .ptable-wrap{overflow-x:auto;margin-bottom:1.5rem}
     .ptable{width:100%;border-collapse:collapse;font-size:0.82rem}
@@ -325,30 +339,7 @@
               </div>
             </div>
 
-            <div class="field-row">
-              <div class="field">
-                <label for="category">Catégorie</label>
-                <select id="category">
-                  <option value="">Toutes les catégories</option>
-                  <option>ALIEN LED</option><option>ATLA</option><option>CLARITY</option>
-                  <option>CRISTAL WALL</option><option>DALI</option><option>DUNA</option>
-                  <option>ENERGY</option><option>ERIA</option><option>FLAME</option>
-                  <option>HARPER</option><option>INFINITY</option><option>KONA</option>
-                  <option>MYRA</option><option>NURIA</option><option>ODIN</option>
-                  <option>OLED</option><option>OPT</option><option>PRODIGY</option>
-                  <option>PRODIGY WALL</option><option>PRODIGY XL</option><option>SPY SYSTEM</option>
-                  <option>TREND</option><option>TREND RECESSED</option><option>TREND WALL</option>
-                  <option>VIALED</option><option>VIALED SIGN</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="budget">Budget max</label>
-                <div class="budget-wrap">
-                  <input type="number" id="budget" placeholder="Ex : 500" min="0" step="10">
-                  <span class="unit">EUR</span>
-                </div>
-              </div>
-            </div>
+            <!-- Catégorie et budget retirés pour simplifier le MVP -->
 
             <button type="submit" class="btn" id="submitBtn">
               <span class="shine"></span>
@@ -382,7 +373,7 @@
   <a href="https://www.led-solution.be" target="_blank">LED Solution</a>
   <span class="sep">|</span>
   Powered by <a href="https://stoy.be" target="_blank">STOY Automation</a>
-  <span class="sep">|</span> v2.2
+  <span class="sep">|</span> v2.3
 </div>
 
 <script>
@@ -489,8 +480,6 @@ form.addEventListener('submit',async e=>{
   if(!query&&!imageBase64){errorMsg.textContent='Veuillez saisir une recherche ou uploader une photo.';errorMsg.classList.add('active');return}
   const payload={query:query||'Recherche par image'};
   if(imageBase64){payload.image_base64=imageBase64;payload.image_mime=imageMime}
-  const cat=document.getElementById('category').value;if(cat)payload.category=cat;
-  const bud=document.getElementById('budget').value;if(bud)payload.budget_max=parseFloat(bud);
 
   searchCard.style.display='none';resultsEl.classList.remove('active');errorMsg.classList.remove('active');
   loadingEl.classList.add('active');
@@ -504,19 +493,21 @@ form.addEventListener('submit',async e=>{
     if (hasClip || hasText) {
       let html = '';
       if (hasClip) {
-        html += '<h3 style="color:var(--sky);margin-bottom:0.8rem;font-size:1rem">Similarit\u00e9 visuelle (CLIP) \u2014 ' + data.products_clip.length + ' r\u00e9sultats</h3>';
-        html += renderTable(data.products_clip);
+        html += '<div class="results-block"><div class="results-block-header"><span class="results-icon">&#128065;</span><h3>Correspondance visuelle</h3><span class="results-count">' + data.products_clip.length + ' produits</span></div>';
+        html += '<p class="results-desc">Produits dont l\'apparence ressemble le plus \u00e0 votre photo</p>';
+        html += renderTable(data.products_clip) + '</div>';
       }
       if (hasText) {
-        html += '<h3 style="color:var(--sky);margin:1.5rem 0 0.8rem;font-size:1rem">Recherche s\u00e9mantique (Vision IA) \u2014 ' + data.products_text.length + ' r\u00e9sultats</h3>';
-        html += renderTable(data.products_text);
+        html += '<div class="results-block"><div class="results-block-header"><span class="results-icon">&#129504;</span><h3>Correspondance s\u00e9mantique</h3><span class="results-count">' + data.products_text.length + ' produits</span></div>';
+        html += '<p class="results-desc">Produits correspondant \u00e0 la description technique de votre recherche</p>';
+        html += renderTable(data.products_text) + '</div>';
       }
       if (data.output) {
-        html += '<details style="margin-top:1.5rem"><summary style="cursor:pointer;color:var(--sky);font-size:0.85rem;font-weight:600">Analyse d\u00e9taill\u00e9e par l\'IA</summary><div style="margin-top:1rem">' + md(data.output) + '</div></details>';
+        html += '<details class="ai-details"><summary>&#129302; Analyse d\u00e9taill\u00e9e par l\'IA</summary><div class="ai-content">' + md(data.output) + '</div></details>';
       }
       agentResponse.innerHTML = html;
     } else if (data.products && data.products.length > 0) {
-      agentResponse.innerHTML = renderTable(data.products) + (data.output ? '<details style="margin-top:1.5rem"><summary style="cursor:pointer;color:var(--sky);font-size:0.85rem;font-weight:600">Analyse d\u00e9taill\u00e9e par l\'IA</summary><div style="margin-top:1rem">' + md(data.output) + '</div></details>' : '');
+      agentResponse.innerHTML = renderTable(data.products) + (data.output ? '<details class="ai-details"><summary>&#129302; Analyse d\u00e9taill\u00e9e par l\'IA</summary><div class="ai-content">' + md(data.output) + '</div></details>' : '');
     } else {
       agentResponse.innerHTML = md(data.output || 'Aucune r\u00e9ponse.');
     }
