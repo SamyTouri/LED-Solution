@@ -5,168 +5,227 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LED Solution — Recherche Produits IA</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     :root{
-      --cyan:#22d3ee;--cyan-dim:rgba(34,211,238,0.12);--cyan-glow:rgba(34,211,238,0.25);
-      --blue:#3b82f6;--bg:#081120;--card:rgba(255,255,255,0.06);
-      --border:rgba(255,255,255,0.10);--border-h:rgba(34,211,238,0.30);
-      --text:#ffffff;--text-dim:#94a3b8;--text-mid:#cbd5e1;
-      --input-bg:rgba(255,255,255,0.05);--input-border:rgba(255,255,255,0.05);
-      --radius:1.5rem;--radius-sm:1rem;
+      --white:#ffffff;--ice:#e0f2fe;--sky:#7dd3fc;--blue:#0ea5e9;--blue-deep:#0369a1;
+      --glow:rgba(14,165,233,0.15);--glow-strong:rgba(125,211,252,0.25);
+      --bg:#0a0f1a;--bg-mid:#0d1525;--bg-card:rgba(255,255,255,0.04);
+      --border:rgba(255,255,255,0.07);--border-h:rgba(14,165,233,0.35);
+      --text:#f0f6ff;--text-dim:#546580;--text-mid:#8fa3bf;
+      --radius:1.2rem;--radius-sm:0.8rem;
+      --font:'Outfit',system-ui,sans-serif;
+      --font-head:'Space Grotesk',system-ui,sans-serif;
     }
     body{
-      font-family:'Inter',system-ui,sans-serif;
-      background:radial-gradient(circle at top,rgba(34,211,238,0.14),transparent 35%),
-                 linear-gradient(180deg,#081120 0%,#0b1328 45%,#0f172a 100%);
+      font-family:var(--font);
+      background:var(--bg);
       color:var(--text);min-height:100vh;overflow-x:hidden;
       -webkit-font-smoothing:antialiased;
     }
 
-    /* Ambient blurs */
-    .ambient{position:fixed;inset:0;pointer-events:none;z-index:0}
-    .ambient .b1{position:absolute;top:-6rem;left:50%;transform:translateX(-50%);width:18rem;height:18rem;border-radius:50%;background:rgba(34,211,238,0.15);filter:blur(80px)}
-    .ambient .b2{position:absolute;top:33%;left:-5rem;width:18rem;height:18rem;border-radius:50%;background:rgba(59,130,246,0.08);filter:blur(80px)}
-    .ambient .b3{position:absolute;bottom:0;right:0;width:20rem;height:20rem;border-radius:50%;background:rgba(168,85,247,0.07);filter:blur(80px)}
+    /* Animated background */
+    .bg-scene{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+    .light-cone{
+      position:absolute;top:-30vh;left:50%;transform:translateX(-50%);
+      width:40vw;height:80vh;
+      background:conic-gradient(from 180deg at 50% 0%,transparent 30%,rgba(14,165,233,0.06) 42%,rgba(125,211,252,0.1) 50%,rgba(14,165,233,0.06) 58%,transparent 70%);
+      animation:cone-breathe 6s ease-in-out infinite;
+    }
+    @keyframes cone-breathe{0%,100%{opacity:.7;transform:translateX(-50%) scaleX(1)}50%{opacity:1;transform:translateX(-50%) scaleX(1.15)}}
+    .orb{position:absolute;border-radius:50%;filter:blur(60px);animation:float-orb 8s ease-in-out infinite}
+    .orb-1{width:15rem;height:15rem;background:rgba(14,165,233,0.08);top:20%;left:-5%;animation-delay:0s;animation-duration:10s}
+    .orb-2{width:10rem;height:10rem;background:rgba(125,211,252,0.06);top:60%;right:-3%;animation-delay:-3s;animation-duration:12s}
+    .orb-3{width:8rem;height:8rem;background:rgba(56,189,248,0.05);bottom:10%;left:30%;animation-delay:-5s;animation-duration:9s}
+    @keyframes float-orb{0%,100%{transform:translateY(0) scale(1)}33%{transform:translateY(-20px) scale(1.05)}66%{transform:translateY(10px) scale(0.95)}}
+    .grid-lines{position:absolute;inset:0;
+      background-image:linear-gradient(rgba(14,165,233,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(14,165,233,0.03) 1px,transparent 1px);
+      background-size:60px 60px;
+      mask-image:radial-gradient(ellipse 60% 50% at 50% 30%,black,transparent);-webkit-mask-image:radial-gradient(ellipse 60% 50% at 50% 30%,black,transparent);
+      animation:grid-fade 4s ease-in-out infinite alternate}
+    @keyframes grid-fade{from{opacity:.4}to{opacity:.8}}
+    .scan-line{position:absolute;top:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,rgba(14,165,233,0.4),rgba(125,211,252,0.6),rgba(14,165,233,0.4),transparent);
+      animation:scan 5s ease-in-out infinite}
+    @keyframes scan{0%{top:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:100%;opacity:0}}
 
     /* Layout */
-    .page{position:relative;z-index:1;max-width:80rem;margin:0 auto;min-height:100vh;display:flex;align-items:center;padding:2rem 1.5rem}
-    .grid{display:grid;grid-template-columns:1.05fr 0.95fr;gap:2.5rem;width:100%;align-items:center}
-    @media(max-width:1024px){.grid{grid-template-columns:1fr;gap:2rem}}
+    .page{position:relative;z-index:1;max-width:78rem;margin:0 auto;min-height:100vh;display:flex;align-items:center;padding:2.5rem 2rem}
+    .grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:3.5rem;width:100%;align-items:center}
+    @media(max-width:1024px){.grid{grid-template-columns:1fr;gap:2rem}.page{padding:2rem 1.2rem}}
 
     /* Left column */
-    .brand-row{display:flex;align-items:center;gap:1rem;margin-bottom:2rem}
-    .logo-box{border-radius:1rem;border:1px solid var(--border);background:rgba(255,255,255,0.08);padding:0.7rem;backdrop-filter:blur(16px)}
+    .brand-row{display:flex;align-items:center;gap:1rem;margin-bottom:2rem;animation:slideUp .6s ease-out both}
     .logo-box img{height:2.2rem;width:auto}
-    .badge{display:inline-flex;align-items:center;gap:0.5rem;border-radius:2rem;border:1px solid var(--cyan-glow);background:rgba(255,255,255,0.04);padding:0.4rem 1rem;font-size:0.8rem;font-weight:500;backdrop-filter:blur(12px);color:var(--cyan)}
-    .badge .dot{width:0.5rem;height:0.5rem;border-radius:50%;background:var(--cyan);animation:pulse 2s ease-in-out infinite;box-shadow:0 0 8px var(--cyan)}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+    .badge{display:inline-flex;align-items:center;gap:0.5rem;border-radius:2rem;border:1px solid rgba(14,165,233,0.2);background:rgba(14,165,233,0.06);padding:0.4rem 1rem;font-size:0.75rem;font-weight:500;color:var(--sky)}
+    .badge .dot{width:6px;height:6px;border-radius:50%;background:var(--sky);box-shadow:0 0 12px var(--sky),0 0 4px var(--sky);animation:blink-dot 2s ease-in-out infinite}
+    @keyframes blink-dot{0%,100%{opacity:1;box-shadow:0 0 12px var(--sky),0 0 4px var(--sky)}50%{opacity:.3;box-shadow:0 0 4px var(--sky)}}
 
-    .hero-title{font-size:2.6rem;font-weight:700;line-height:1.15;letter-spacing:-0.5px;margin-bottom:1.2rem}
-    .hero-title .grad{background:linear-gradient(135deg,#67e8f9,var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .hero-sub{font-size:1.05rem;color:var(--text-mid);line-height:1.6;max-width:36rem;margin-bottom:2rem}
+    .hero-title{font-family:var(--font-head);font-size:2.8rem;font-weight:700;line-height:1.12;letter-spacing:-0.5px;margin-bottom:1.2rem;animation:slideUp .6s .1s ease-out both}
+    .hero-title .highlight{position:relative;display:inline-block;color:var(--sky)}
+    .hero-title .highlight::after{content:'';position:absolute;left:0;bottom:2px;width:100%;height:8px;
+      background:linear-gradient(90deg,rgba(14,165,233,0.3),rgba(125,211,252,0.15));border-radius:4px;z-index:-1;
+      animation:highlight-grow .8s .6s ease-out both}
+    @keyframes highlight-grow{from{transform:scaleX(0);transform-origin:left}to{transform:scaleX(1);transform-origin:left}}
 
-    /* Hero image */
-    .hero-img-wrap{position:relative;border-radius:var(--radius);border:1px solid var(--border);background:var(--card);padding:0.7rem;backdrop-filter:blur(16px);overflow:hidden;margin-bottom:2rem}
-    .hero-img-wrap::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(34,211,238,0.08),transparent,rgba(59,130,246,0.08));pointer-events:none}
-    .hero-img{width:100%;height:16rem;object-fit:cover;border-radius:1.2rem;display:block}
-    .hero-caption{position:absolute;left:1.2rem;right:1.2rem;bottom:1.2rem;border-radius:1rem;border:1px solid var(--border);background:rgba(15,23,42,0.55);padding:0.8rem 1rem;backdrop-filter:blur(12px)}
-    .hero-caption .t{font-size:0.85rem;font-weight:600}
-    .hero-caption .s{font-size:0.8rem;color:var(--text-dim);margin-top:2px}
+    .hero-sub{font-size:1rem;color:var(--text-mid);line-height:1.7;max-width:36rem;margin-bottom:2.5rem;font-weight:400;animation:slideUp .6s .2s ease-out both}
+    .hero-sub strong{color:var(--ice);font-weight:600}
+
+    /* Hero visual */
+    .hero-img-wrap{position:relative;border-radius:var(--radius);overflow:hidden;margin-bottom:2rem;animation:slideUp .6s .3s ease-out both}
+    .hero-img-wrap::before{content:'';position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,transparent 50%,rgba(10,15,26,0.9));pointer-events:none}
+    .hero-img{width:100%;height:14rem;object-fit:cover;display:block;filter:brightness(0.65) contrast(1.1) saturate(0.9);transition:filter .6s}
+    .hero-img-wrap:hover .hero-img{filter:brightness(0.75) contrast(1.1) saturate(1)}
+    .hero-beam{position:absolute;top:0;left:50%;width:30%;height:100%;z-index:1;
+      background:linear-gradient(180deg,rgba(125,211,252,0.12),transparent 70%);transform:translateX(-50%);
+      animation:beam-sway 4s ease-in-out infinite}
+    @keyframes beam-sway{0%,100%{transform:translateX(-50%) skewX(0deg)}50%{transform:translateX(-40%) skewX(3deg)}}
+    .hero-caption{position:absolute;left:1.2rem;right:1.2rem;bottom:1rem;z-index:3;display:flex;justify-content:space-between;align-items:flex-end}
+    .hero-caption .t{font-size:0.85rem;font-weight:600;color:var(--text)}
+    .hero-caption .s{font-size:0.7rem;color:var(--text-dim)}
 
     /* Stats */
-    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;margin-bottom:1rem}
-    .stat{border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card);padding:1rem;backdrop-filter:blur(16px);transition:.3s}
-    .stat:hover{transform:translateY(-3px);border-color:var(--border-h);background:rgba(255,255,255,0.08)}
-    .stat .v{font-size:1.4rem;font-weight:700}
-    .stat .l{font-size:0.75rem;color:var(--text-dim);margin-top:2px}
-    @media(max-width:600px){.stats{grid-template-columns:1fr}.hero-title{font-size:1.8rem}}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;animation:slideUp .6s .4s ease-out both}
+    .stat{position:relative;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg-card);padding:1rem;overflow:hidden;transition:.4s ease;cursor:default}
+    .stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue),transparent);opacity:0;transition:.4s}
+    .stat:hover{border-color:var(--border-h);transform:translateY(-3px)}
+    .stat:hover::before{opacity:1}
+    .stat .v{font-family:var(--font-head);font-size:1.3rem;font-weight:700;color:var(--text)}
+    .stat .l{font-size:0.7rem;color:var(--text-dim);margin-top:3px}
+    @media(max-width:600px){.stats{grid-template-columns:1fr}.hero-title{font-size:2rem}}
 
     /* Right: Form card */
-    .form-wrap{position:relative}
-    .form-glow{position:absolute;inset:-0.5rem;border-radius:2rem;background:linear-gradient(135deg,rgba(34,211,238,0.2),rgba(59,130,246,0.12),rgba(168,85,247,0.15));filter:blur(30px);z-index:0}
-    .form-card{position:relative;z-index:1;border-radius:var(--radius);border:1px solid var(--border);background:rgba(255,255,255,0.06);padding:1.5rem;backdrop-filter:blur(24px)}
+    .form-wrap{position:relative;animation:slideUp .6s .15s ease-out both}
+    .form-glow{position:absolute;inset:-0.8rem;border-radius:2rem;
+      background:radial-gradient(ellipse at 50% 0%,rgba(14,165,233,0.12),transparent 60%);
+      filter:blur(30px);z-index:0;animation:glow-pulse 4s ease-in-out infinite}
+    @keyframes glow-pulse{0%,100%{opacity:.6}50%{opacity:1}}
+    .form-card{position:relative;z-index:1;border-radius:var(--radius);border:1px solid var(--border);background:rgba(13,21,37,0.7);padding:1.8rem;backdrop-filter:blur(20px)}
 
     .form-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem}
-    .form-header .title-row{display:flex;align-items:center;gap:0.6rem}
-    .form-header .brand-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.2em;color:rgba(34,211,238,0.8)}
-    .form-header .title{font-size:1.3rem;font-weight:700;margin-top:0.2rem}
-    .form-header .ia-badge{border-radius:var(--radius-sm);border:1px solid rgba(34,211,238,0.2);background:rgba(34,211,238,0.08);padding:0.35rem 0.7rem;font-size:0.75rem;color:#a5f3fc;white-space:nowrap}
+    .form-header .brand-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.2em;color:var(--text-dim)}
+    .form-header .title{font-family:var(--font-head);font-size:1.35rem;font-weight:700;margin-top:0.2rem}
+    .form-header .ia-badge{border-radius:2rem;border:1px solid rgba(14,165,233,0.2);background:rgba(14,165,233,0.06);
+      padding:0.35rem 0.8rem;font-size:0.7rem;color:var(--sky);white-space:nowrap;animation:badge-glow 3s ease-in-out infinite}
+    @keyframes badge-glow{0%,100%{box-shadow:0 0 0 rgba(14,165,233,0)}50%{box-shadow:0 0 16px rgba(14,165,233,0.15)}}
 
     /* Form fields */
-    .field{border-radius:var(--radius);border:1px solid var(--border);background:rgba(15,23,42,0.35);padding:1rem;margin-bottom:1rem;transition:.3s}
-    .field:hover,.field:focus-within{border-color:var(--border-h);background:rgba(15,23,42,0.5)}
-    .field label{display:block;font-size:0.8rem;font-weight:500;color:var(--text-mid);margin-bottom:0.5rem}
-    .field textarea,.field input,.field select{width:100%;background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--radius-sm);padding:0.8rem 1rem;color:white;font-family:inherit;font-size:0.9rem;resize:none;outline:none;transition:.3s}
-    .field textarea:focus,.field input:focus,.field select:focus{border-color:rgba(34,211,238,0.35);background:rgba(255,255,255,0.08)}
-    .field textarea{min-height:5.5rem}
-    .field select option{background:#0f172a;color:white}
-    .field .hint{display:flex;justify-content:space-between;align-items:center;margin-top:0.5rem;font-size:0.7rem;color:var(--text-dim)}
-    .field .hint .tag{background:rgba(255,255,255,0.04);padding:2px 8px;border-radius:2rem}
+    .field{border-radius:var(--radius-sm);border:1px solid var(--border);background:rgba(255,255,255,0.02);padding:1rem;margin-bottom:0.8rem;transition:.3s ease}
+    .field:hover,.field:focus-within{border-color:var(--border-h);background:rgba(14,165,233,0.02)}
+    .field:focus-within{box-shadow:0 0 0 3px rgba(14,165,233,0.08)}
+    .field label{display:block;font-size:0.7rem;font-weight:600;color:var(--text-mid);margin-bottom:0.5rem;letter-spacing:0.06em;text-transform:uppercase}
+    .field textarea,.field input,.field select{width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:6px;padding:0.75rem 0.9rem;color:white;font-family:var(--font);font-size:0.88rem;resize:none;outline:none;transition:.3s}
+    .field textarea:focus,.field input:focus,.field select:focus{border-color:var(--blue);background:rgba(14,165,233,0.04)}
+    .field textarea{min-height:5rem}
+    .field textarea::placeholder,.field input::placeholder{color:rgba(143,163,191,0.35)}
+    .field select{cursor:pointer;-webkit-appearance:none;appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23546580' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right 0.9rem center;background-color:transparent}
+    .field select option{background:var(--bg-mid);color:white}
+    .field .hint{display:flex;justify-content:space-between;align-items:center;margin-top:0.4rem;font-size:0.68rem;color:var(--text-dim)}
+    .field .hint .tag{color:var(--sky);opacity:.7;font-weight:500}
     .field-row{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem}
     @media(max-width:600px){.field-row{grid-template-columns:1fr}}
     .budget-wrap{position:relative}
-    .budget-wrap .unit{position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-size:0.8rem;color:var(--text-dim)}
+    .budget-wrap .unit{position:absolute;right:0.9rem;top:50%;transform:translateY(-50%);font-size:0.78rem;color:var(--text-dim)}
 
     /* Drop zone */
-    .drop{position:relative;overflow:hidden;border-radius:var(--radius);border:2px dashed var(--border-h);background:linear-gradient(135deg,rgba(34,211,238,0.06),rgba(59,130,246,0.06));padding:1.2rem;margin-bottom:1rem;transition:.3s;cursor:pointer}
-    .drop:hover{transform:translateY(-2px);border-color:rgba(34,211,238,0.45);background:linear-gradient(135deg,rgba(34,211,238,0.1),rgba(59,130,246,0.1))}
-    .drop::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at top,rgba(255,255,255,0.08),transparent 50%);pointer-events:none}
+    .drop{position:relative;overflow:hidden;border-radius:var(--radius-sm);border:1.5px dashed rgba(14,165,233,0.25);background:rgba(14,165,233,0.02);padding:1rem;margin-bottom:0.8rem;transition:.3s ease;cursor:pointer}
+    .drop:hover{border-color:rgba(14,165,233,0.45);background:rgba(14,165,233,0.04);transform:translateY(-1px)}
     .drop input{position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2}
-    .drop-inner{position:relative;display:flex;flex-direction:column;align-items:center;gap:0.7rem;border-radius:1.2rem;border:1px solid var(--border);background:rgba(15,23,42,0.25);padding:2rem 1.5rem;text-align:center;backdrop-filter:blur(4px)}
-    .drop-icon{width:3.5rem;height:3.5rem;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);background:rgba(255,255,255,0.08);font-size:1.4rem;transition:.3s}
-    .drop:hover .drop-icon{transform:scale(1.08);background:rgba(255,255,255,0.12)}
-    .drop-title{font-size:1rem;font-weight:600}
-    .drop-sub{font-size:0.8rem;color:var(--text-mid)}
-    .drop-badge{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(255,255,255,0.06);border-radius:2rem;padding:0.25rem 0.7rem;font-size:0.7rem;color:#a5f3fc}
-    .drop-badge .dot{width:0.4rem;height:0.4rem;border-radius:50%;background:var(--cyan);animation:pulse 2s ease-in-out infinite}
-    .drop.has-file{border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.06)}
-    .drop-preview{max-height:6rem;border-radius:0.8rem;margin-top:0.5rem}
-    .drop-remove{color:#f87171;font-size:0.75rem;cursor:pointer;font-weight:500;margin-top:0.3rem;position:relative;z-index:3}
+    .drop-inner{position:relative;display:flex;align-items:center;gap:1rem;padding:0.6rem}
+    .drop-icon{width:2.8rem;height:2.8rem;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid rgba(14,165,233,0.2);background:rgba(14,165,233,0.06);font-size:1.1rem;flex-shrink:0;transition:.3s}
+    .drop:hover .drop-icon{background:rgba(14,165,233,0.12);border-color:rgba(14,165,233,0.4);box-shadow:0 0 16px rgba(14,165,233,0.1)}
+    .drop-title{font-size:0.85rem;font-weight:600;color:var(--text-mid)}
+    .drop-sub{font-size:0.72rem;color:var(--text-dim);margin-top:2px}
+    .drop-badge{display:inline-flex;align-items:center;gap:0.4rem;margin-top:5px;font-size:0.65rem;color:var(--sky);font-weight:500}
+    .drop-badge .dot{width:5px;height:5px;border-radius:50%;background:var(--sky);box-shadow:0 0 6px var(--sky);animation:blink-dot 2s ease-in-out infinite}
+    .drop.has-file{border-color:rgba(34,197,94,0.3);border-style:solid;background:rgba(34,197,94,0.03)}
+    .drop-preview{max-height:5rem;border-radius:6px;margin:0 auto;display:block}
+    .drop-remove{color:var(--text-dim);font-size:0.72rem;cursor:pointer;font-weight:500;margin-top:0.5rem;text-align:center;position:relative;z-index:3;transition:.2s}
+    .drop-remove:hover{color:#f87171}
 
     /* Button */
-    .btn{position:relative;width:100%;overflow:hidden;border-radius:var(--radius-sm);border:none;background:linear-gradient(135deg,var(--cyan),#0ea5e9,var(--blue));padding:1rem;font-size:1.05rem;font-weight:700;color:white;cursor:pointer;box-shadow:0 20px 50px rgba(14,165,233,0.3);transition:.3s;font-family:inherit}
-    .btn:hover{transform:translateY(-2px);box-shadow:0 25px 60px rgba(14,165,233,0.4)}
-    .btn:active{transform:translateY(0)}
-    .btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none}
-    .btn .shine{position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);transition:1s}
+    .btn{position:relative;width:100%;overflow:hidden;border-radius:var(--radius-sm);border:none;
+      background:linear-gradient(135deg,var(--blue),#38bdf8,var(--blue));background-size:200% 200%;
+      padding:0.95rem;font-size:0.9rem;font-weight:700;color:white;cursor:pointer;
+      box-shadow:0 8px 32px rgba(14,165,233,0.25);transition:.3s;font-family:var(--font-head);
+      letter-spacing:0.04em;margin-top:0.3rem;animation:btn-gradient 3s ease infinite}
+    @keyframes btn-gradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(14,165,233,0.35)}
+    .btn:active{transform:translateY(0) scale(0.99)}
+    .btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none;animation:none}
+    .btn .shine{position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);transition:1s}
     .btn:hover .shine{transform:translateX(100%)}
     .btn .label{position:relative;display:flex;align-items:center;justify-content:center;gap:0.5rem}
     .btn .arrow{transition:.3s}
-    .btn:hover .arrow{transform:translateX(4px)}
+    .btn:hover .arrow{transform:translateX(5px)}
 
     /* Loading */
     .loading{display:none;text-align:center;padding:4rem 1rem}
     .loading.active{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:20rem}
-    .loader{width:3rem;height:3rem;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:1.2rem}
+    .loader{position:relative;width:3rem;height:3rem;margin-bottom:1.5rem}
+    .loader::before,.loader::after{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid transparent}
+    .loader::before{border-top-color:var(--sky);animation:spin .8s linear infinite}
+    .loader::after{border-right-color:rgba(14,165,233,0.3);animation:spin 1.6s linear infinite reverse}
     @keyframes spin{to{transform:rotate(360deg)}}
     .loading p{color:var(--text-mid);font-size:0.95rem;font-weight:500}
-    .loading .sub{font-size:0.8rem;color:var(--text-dim);margin-top:4px}
+    .loading .sub{font-size:0.78rem;color:var(--text-dim);margin-top:6px}
 
     /* Results */
     .results{display:none}
-    .results.active{display:block;animation:fadeIn .4s ease-out}
+    .results.active{display:block;animation:fadeIn .5s ease-out}
     @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-    .results-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
-    .results-bar h2{font-size:1.2rem;font-weight:700}
-    .btn-back{display:inline-flex;align-items:center;gap:6px;padding:0.5rem 1rem;background:var(--card);color:var(--text-mid);border:1px solid var(--border);border-radius:0.6rem;font-size:0.8rem;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit}
-    .btn-back:hover{border-color:var(--cyan);color:var(--cyan)}
+    .results-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem}
+    .results-bar h2{font-family:var(--font-head);font-size:1.2rem;font-weight:700}
+    .btn-back{display:inline-flex;align-items:center;gap:6px;padding:0.5rem 1rem;background:var(--bg-card);color:var(--text-mid);border:1px solid var(--border);border-radius:6px;font-size:0.75rem;font-weight:600;cursor:pointer;transition:.2s;font-family:var(--font)}
+    .btn-back:hover{border-color:var(--blue);color:var(--sky)}
 
     /* Agent response */
-    .response{border-radius:var(--radius);border:1px solid var(--border);background:rgba(255,255,255,0.04);padding:1.8rem 2rem;backdrop-filter:blur(16px);line-height:1.7;font-size:0.9rem}
-    .response h2{color:var(--cyan);font-size:1.1rem;font-weight:700;margin-top:2rem;margin-bottom:0.5rem;padding-bottom:0.4rem;border-bottom:1px solid rgba(34,211,238,0.2)}
+    .response{border-radius:var(--radius);border:1px solid var(--border);background:rgba(255,255,255,0.025);padding:1.8rem 2rem;backdrop-filter:blur(12px);line-height:1.75;font-size:0.9rem;color:var(--text-mid)}
+    .response h2{color:var(--sky);font-family:var(--font-head);font-size:1.1rem;font-weight:700;margin-top:2rem;margin-bottom:0.5rem;padding-bottom:0.4rem;border-bottom:1px solid rgba(14,165,233,0.15)}
     .response h2:first-child{margin-top:0}
-    .response h3{color:#7dd3fc;font-size:0.95rem;font-weight:700;margin-top:1.4rem;margin-bottom:0.3rem}
+    .response h3{color:var(--ice);font-size:0.95rem;font-weight:700;margin-top:1.4rem;margin-bottom:0.3rem}
     .response h4{color:var(--text-mid);font-size:0.9rem;font-weight:600;margin-top:1rem;margin-bottom:0.2rem}
     .response strong{color:white;font-weight:600}
-    .response img{max-width:10rem;border-radius:0.8rem;border:1px solid var(--border);margin:0.5rem 0;display:block}
-    .response a{color:var(--cyan);text-decoration:none;font-weight:500;border-bottom:1px solid transparent;transition:.2s}
-    .response a:hover{border-bottom-color:var(--cyan)}
+    .response img{max-width:10rem;border-radius:0.6rem;border:1px solid var(--border);margin:0.5rem 0;display:block}
+    .response a{color:var(--sky);text-decoration:none;font-weight:500;border-bottom:1px solid transparent;transition:.2s}
+    .response a:hover{border-bottom-color:var(--sky)}
     .response ul,.response ol{padding-left:1.3rem;margin:0.3rem 0}
-    .response li{margin-bottom:1px;line-height:1.5}
+    .response li{margin-bottom:2px;line-height:1.6}
+    .response li::marker{color:var(--blue)}
     .response hr{border:none;border-top:1px solid var(--border);margin:1.5rem 0}
     .response p{margin-bottom:0.5rem}
 
     /* Error */
-    .error{display:none;border-radius:var(--radius-sm);border:1px solid rgba(248,113,113,0.3);background:rgba(248,113,113,0.08);padding:0.8rem 1.2rem;margin-bottom:1rem;font-size:0.85rem;color:#fca5a5;font-weight:500}
+    .error{display:none;border-radius:var(--radius-sm);border:1px solid rgba(248,113,113,0.2);background:rgba(248,113,113,0.05);padding:0.8rem 1.2rem;margin-bottom:0.8rem;font-size:0.82rem;color:#fca5a5;font-weight:500}
     .error.active{display:block}
 
     /* Footer */
-    .footer{position:relative;z-index:1;text-align:center;padding:1.5rem;font-size:0.75rem;color:var(--text-dim)}
-    .footer a{color:var(--cyan);text-decoration:none;font-weight:500}
-    .footer .sep{margin:0 6px;opacity:.3}
+    .footer{position:relative;z-index:1;text-align:center;padding:2rem;font-size:0.7rem;color:var(--text-dim);letter-spacing:0.08em}
+    .footer a{color:var(--sky);text-decoration:none;font-weight:500;transition:.2s}
+    .footer a:hover{color:var(--ice)}
+    .footer .sep{margin:0 8px;opacity:.25}
 
-    /* Hide left column in results mode on mobile */
     @media(max-width:1024px){
       .left-col.hidden-mobile{display:none}
       .grid.results-mode{grid-template-columns:1fr}
     }
+
+    @keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
   </style>
 </head>
 <body>
 
-<div class="ambient"><div class="b1"></div><div class="b2"></div><div class="b3"></div></div>
+<div class="bg-scene">
+  <div class="light-cone"></div>
+  <div class="grid-lines"></div>
+  <div class="scan-line"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
 
 <div class="page">
   <div class="grid" id="mainGrid">
@@ -175,36 +234,38 @@
     <div class="left-col" id="leftCol">
       <div class="brand-row">
         <div class="logo-box">
-          <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='40' viewBox='0 0 200 40'><text x='0' y='30' font-family='Arial,sans-serif' font-size='26' font-weight='800' fill='%23ffffff'>LED</text><text x='65' y='30' font-family='Arial,sans-serif' font-size='26' font-weight='400' fill='%2322d3ee'>Solution</text></svg>" alt="LED Solution">
+          <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='40' viewBox='0 0 200 40'><text x='0' y='30' font-family='Arial,sans-serif' font-size='26' font-weight='800' fill='%23ffffff'>LED</text><text x='65' y='30' font-family='Arial,sans-serif' font-size='26' font-weight='400' fill='%237dd3fc'>Solution</text></svg>" alt="LED Solution">
         </div>
         <div class="badge"><span class="dot"></span> Recherche IA</div>
       </div>
 
       <h1 class="hero-title">
-        Trouvez le luminaire avec une <span class="grad">recherche intelligente</span>
+        Trouvez le bon luminaire<br>en une <span class="highlight">recherche</span>
       </h1>
       <p class="hero-sub">
-        D&eacute;crivez un produit, ajoutez une photo, et laissez l'IA analyser <strong>1&nbsp;684 r&eacute;f&eacute;rences</strong> Linergy pour vous recommander les meilleurs choix.
+        Décrivez votre besoin, importez une photo ou filtrez par catégorie. L'IA parcourt <strong>1&nbsp;684 références</strong> Linergy et vous présente les meilleurs choix.
       </p>
 
       <div class="hero-img-wrap">
-        <img class="hero-img" src="https://www.led-solution.be/images/SLIDERP1/n_led-solution05a.jpg" alt="LED Solution">
+        <div class="hero-beam"></div>
+        <img class="hero-img" src="https://www.led-solution.be/images/SLIDERP1/n_led-solution05a.jpg" alt="Showroom luminaires LED">
         <div class="hero-caption">
-          <div class="t">S&eacute;lection intelligente de luminaires</div>
-          <div class="s">Texte + image + crit&egrave;res m&eacute;tier dans une seule interface.</div>
+          <div>
+            <div class="s">Catalogue Linergy</div>
+            <div class="t">Recherche assistée par IA</div>
+          </div>
         </div>
       </div>
 
       <div class="stats">
-        <div class="stat"><div class="v">1 684</div><div class="l">r&eacute;f&eacute;rences analys&eacute;es</div></div>
-        <div class="stat"><div class="v">&lt; 30s</div><div class="l">pour une r&eacute;ponse</div></div>
-        <div class="stat"><div class="v">IA + image</div><div class="l">recherche hybride</div></div>
+        <div class="stat"><div class="v">1 684</div><div class="l">références analysées</div></div>
+        <div class="stat"><div class="v">&lt; 30s</div><div class="l">par réponse</div></div>
+        <div class="stat"><div class="v">IA + Vision</div><div class="l">recherche hybride</div></div>
       </div>
     </div>
 
     <!-- RIGHT -->
     <div class="right-col">
-
       <div class="error" id="errorMsg"></div>
 
       <!-- FORM -->
@@ -213,21 +274,19 @@
         <div class="form-card">
           <div class="form-header">
             <div>
-              <div class="title-row">
-                <div class="brand-label">LED Solution</div>
-              </div>
+              <div class="brand-label">LED Solution</div>
               <div class="title">Recherche Produits</div>
             </div>
-            <div class="ia-badge">IA assist&eacute;e</div>
+            <div class="ia-badge">IA assistée</div>
           </div>
 
           <form id="searchForm">
             <div class="field">
               <label for="query">Votre recherche</label>
-              <textarea id="query" rows="4" placeholder="Ex : dalle LED 60&times;60 IP44, applique murale blanche IP65, &eacute;clairage de secours 3h..."></textarea>
+              <textarea id="query" rows="4" placeholder="Dalle LED 60×60 IP44, applique murale blanche IP65, éclairage de secours 3h…"></textarea>
               <div class="hint">
-                <span>D&eacute;crivez le style, la forme, l'usage</span>
-                <span class="tag">Prompt assist&eacute;</span>
+                <span>Décrivez le style, la forme, l'usage</span>
+                <span class="tag">Prompt assisté</span>
               </div>
             </div>
 
@@ -237,13 +296,13 @@
                 <div class="drop-icon">&#128247;</div>
                 <div>
                   <div class="drop-title">Ajoutez une photo du produit</div>
-                  <div class="drop-sub">Glisser-d&eacute;poser ou cliquer pour importer</div>
+                  <div class="drop-sub">Glisser-déposer ou cliquer pour importer</div>
+                  <div class="drop-badge"><span class="dot"></span> Vision IA activée</div>
                 </div>
-                <div class="drop-badge"><span class="dot"></span> Vision IA activ&eacute;e</div>
               </div>
               <div id="previewContent" style="display:none">
-                <div class="drop-inner">
-                  <img class="drop-preview" id="imagePreview" alt="Aper&ccedil;u">
+                <div class="drop-inner" style="flex-direction:column;align-items:center">
+                  <img class="drop-preview" id="imagePreview" alt="Aperçu">
                   <div class="drop-remove" id="removeImage">Supprimer la photo</div>
                 </div>
               </div>
@@ -251,9 +310,9 @@
 
             <div class="field-row">
               <div class="field">
-                <label for="category">Cat&eacute;gorie</label>
+                <label for="category">Catégorie</label>
                 <select id="category">
-                  <option value="">Toutes les cat&eacute;gories</option>
+                  <option value="">Toutes les catégories</option>
                   <option>ALIEN LED</option><option>ATLA</option><option>CLARITY</option>
                   <option>CRISTAL WALL</option><option>DALI</option><option>DUNA</option>
                   <option>ENERGY</option><option>ERIA</option><option>FLAME</option>
@@ -285,14 +344,14 @@
       <!-- LOADING -->
       <div class="loading" id="loading">
         <div class="loader"></div>
-        <p>L'IA analyse votre demande...</p>
-        <p class="sub">Recherche s&eacute;mantique parmi 1 684 produits Linergy</p>
+        <p>L'IA analyse votre demande…</p>
+        <p class="sub">Recherche sémantique parmi 1 684 produits Linergy</p>
       </div>
 
       <!-- RESULTS -->
       <div class="results" id="results">
         <div class="results-bar">
-          <h2>R&eacute;sultats</h2>
+          <h2>Résultats</h2>
           <button class="btn-back" id="newSearchBtn">&#8592; Nouvelle recherche</button>
         </div>
         <div class="response" id="agentResponse"></div>
